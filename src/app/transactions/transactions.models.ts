@@ -36,5 +36,9 @@ export class Transaction {
     get company(){
         return this.source.Company
     }
+    
+    hasCreditCard(){
+        
+    }
 
 }

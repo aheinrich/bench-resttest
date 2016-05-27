@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Rx';
 import { Transaction, IRawTransaction } from './transactions.models'
 
 interface ITransactionResponse {
-    totalCount:number;
+    totalCount: number;
     page: string;
     transactions: IRawTransaction[]
 }
@@ -12,39 +12,81 @@ interface ITransactionResponse {
 @Injectable()
 export class TransactionService {
 
+    transactionList: Transaction[]
+    ledgerCache: string[]
+    
+    isReady:boolean;
+
     serviceUrl: string;
 
     constructor(private http: Http) {
         this.serviceUrl = "http://localhost:8000/"
+        this.transactionList = []
+        this.isReady = false
     }
-    
-    getAllTransactions(){
-        let transactionList:Array<any> = []
-        
+
+    getAllTransactions(): Observable<any> {
+        let transactionList: Array<any> = []
+
         let fetchAll = Observable.range(1, 4).flatMap(pageNumber => {
             return this.http.get(this.serviceUrl + "transactions/" + pageNumber + ".json").map(response => {
                 return response.json()
             })
         })
-       
+
         return fetchAll
     }
-    
-    getTransactions() {
-        return this.getAllTransactions().map( (response:ITransactionResponse) => {
-            return response.transactions.map( (t:IRawTransaction) => {
-                return Transaction.fromJSON(t)
+
+    // fetchTransactions() {
+    //     return new Promise((resolve, reject) => {
+    //         this.getAllTransactions().map((response: ITransactionResponse) => {
+    //             return response.transactions.map((t: IRawTransaction) => {
+    //                 return Transaction.fromJSON(t)
+    //             })
+    //         }).subscribe(
+    //             (data: Transaction[]) => {
+    //                 this.transactionList = data.concat(this.transactionList)
+    //             },
+    //             (err: any) => {
+    //                 reject(err)
+    //             },
+    //             () => {
+    //                 resolve(this.transactionList)
+    //             })
+    //     })
+    // }
+
+    fetchTransactions() {
+        if (this.isReady && this.transactionList) {
+            return new Promise((res, rej) => res(this.transactionList))
+        } else {
+            return new Promise((resolve, reject) => {
+                this.getAllTransactions().map((response: ITransactionResponse) => {
+                    return response.transactions.map((t: IRawTransaction) => {
+                        return Transaction.fromJSON(t)
+                    })
+                }).subscribe(
+                    (data: Transaction[]) => {
+                        this.transactionList = data.concat(this.transactionList)
+                    },
+                    (err: any) => {
+                        reject(err)
+                    },
+                    () => {
+                        this.isReady = true
+                        resolve(this.transactionList)
+                    })
             })
-        })
+        }
     }
 
 
-    
-    // getTransactionCount(){
-    //     return this.http.get(this.serviceUrl + "transactions/" + "1.json").map(response => {
-    //         return response.json().totalCount
-    //     })
-    // }
+
+    filterByLedger(transactionList: Transaction[], ledger: string): Transaction[] {
+        return transactionList.filter((t: Transaction) => {
+            return t.ledger === ledger ? true : false
+        })
+    }
 
     private extractData(res: Response) {
         return res.json()

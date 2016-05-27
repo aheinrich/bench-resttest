@@ -11,16 +11,21 @@ import { Transaction } from './transactions.models'
     providers: [ TransactionService ],
     template: `
     <div>
-        <transaction-list [transactions]="transactionList">
+        <transaction-list 
+            [transactions]="transactionList" 
+            (onCategoryFilter)="filterTransactions($event)">
+            <p *ngIf="filterBy">Filtered by: {{filterBy}}</p>
         </transaction-list>
         
         <button (click)="getTransactions()">Fetch Data</button>
+        <button (click)="doReset()">Reset Filter</button>
     </div>
     `
 })
 export class TransactionsComponent implements OnInit {
     
-    transactionList:Array<any>
+    transactionList:Transaction[]
+    filterBy: string;
     
     constructor(private service:TransactionService) {
         this.transactionList = []
@@ -29,9 +34,18 @@ export class TransactionsComponent implements OnInit {
     ngOnInit() { }
     
     getTransactions(){
-        this.service.getTransactions().subscribe( (data:Transaction[]) => {
-            this.transactionList = data.concat(this.transactionList)
-        })
+        this.service.fetchTransactions().then(
+            results => this.transactionList = results 
+        )
+    }
+    
+    filterTransactions(ev:{ledger:string}){
+        this.filterBy = ev.ledger
+        this.transactionList = this.service.filterByLedger(this.transactionList, ev.ledger)
+    }
+    
+    doReset(){
+        
     }
 
 }
