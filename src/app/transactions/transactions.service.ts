@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Transaction, IRawTransaction } from './transactions.models'
+import * as lodash from 'lodash';
 
 interface ITransactionResponse {
     totalCount: number;
@@ -37,45 +38,39 @@ export class TransactionService {
         return fetchAll
     }
 
-    // fetchTransactions() {
-    //     return new Promise((resolve, reject) => {
-    //         this.getAllTransactions().map((response: ITransactionResponse) => {
-    //             return response.transactions.map((t: IRawTransaction) => {
-    //                 return Transaction.fromJSON(t)
-    //             })
-    //         }).subscribe(
-    //             (data: Transaction[]) => {
-    //                 this.transactionList = data.concat(this.transactionList)
-    //             },
-    //             (err: any) => {
-    //                 reject(err)
-    //             },
-    //             () => {
-    //                 resolve(this.transactionList)
-    //             })
-    //     })
-    // }
-
     fetchTransactions() {
         if (this.isReady && this.transactionList) {
             return new Promise((res, rej) => res(this.transactionList))
         } else {
             return new Promise((resolve, reject) => {
+                
+                let handleData = (data: Transaction[]) => {
+                    this.transactionList = data.concat(this.transactionList)
+                }
+                
+                let catchErrors = (err: any) => {
+                    reject(err)
+                }
+                
+                let finalize = () => {
+                    let count = this.transactionList.length
+                    
+                    this.transactionList = lodash.uniqWith(this.transactionList, lodash.isEqual);
+                    //console.log(`Number of duplicates: ${ count - this.transactionList.length}`)
+                    
+                    this.isReady = true
+                    resolve(this.transactionList)
+                }
+                
                 this.getAllTransactions().map((response: ITransactionResponse) => {
                     return response.transactions.map((t: IRawTransaction) => {
                         return Transaction.fromJSON(t)
                     })
                 }).subscribe(
-                    (data: Transaction[]) => {
-                        this.transactionList = data.concat(this.transactionList)
-                    },
-                    (err: any) => {
-                        reject(err)
-                    },
-                    () => {
-                        this.isReady = true
-                        resolve(this.transactionList)
-                    })
+                    (data: Transaction[]) => handleData(data),
+                    (error: any) => catchErrors(error),
+                    () => finalize()
+                )
             })
         }
     }
