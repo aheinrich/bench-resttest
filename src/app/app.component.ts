@@ -7,10 +7,6 @@ import { MdButton } from '@angular2-material/button';
 import { MD_INPUT_DIRECTIVES } from '@angular2-material/input';
 import { MdIcon, MdIconRegistry } from '@angular2-material/icon';
 
-import { DetailsComponent } from './details.component'
-import { SearchService } from './search.service'
-
-
 @Component({
     moduleId: module.id,
     selector: 'app',
@@ -24,40 +20,14 @@ import { SearchService } from './search.service'
         MD_SIDENAV_DIRECTIVES, 
         MdToolbar,
         MdIcon,
-        DetailsComponent
     ],
-    providers: [ SearchService, MdIconRegistry ]
+    providers: [ MdIconRegistry ]
 })
 export class AppComponent implements OnInit {
     
-    name:string;
-    
-    searchResults:Array<any>
-    
-    details:any;
-    
-    constructor(private search:SearchService) { }
+    constructor() { }
 
     ngOnInit() {}
     
-    getConfig(){
-        this.search.getConfig().subscribe(data => {
-            console.log(data)
-        })
-    }
-    
-    doSearch(){
-        this.details = null
-        this.search.search(this.name).subscribe(data => {
-            console.log(data)
-            this.searchResults = data.results
-        })
-    }
-    
-    doDetails(id:number){
-        this.search.fetchDetails(id).subscribe(data => {
-            this.details = data
-        })
-    }
 
 }
