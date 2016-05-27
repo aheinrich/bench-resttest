@@ -35,3 +35,6 @@ src/app/**/*.js
 # Typescript typings
 typings/**/*
 !typings/typings.d.ts
+
+# Mock data 
+mock
