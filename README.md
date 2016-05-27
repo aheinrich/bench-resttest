@@ -1,6 +1,6 @@
-# simple-posters
+# bench-resttest
 
-Query movies from TMDB
+Code test for Bench.co
 
 Uses:
 - Typescript
@@ -9,8 +9,6 @@ Uses:
 ## installation
 
 `npm install`
-
-API keys are stored outsite repository - Add `secrets.json` to root folder with your API key
 
 ## start
 
