@@ -1,11 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Transaction } from './transactions.models'
 import { CurrencyPipe } from './currency.pipe' 
+import { SortingPipe } from './sorting.pipe' 
 
 @Component({
     moduleId: module.id,
     selector: 'transaction-list',
-    pipes: [ CurrencyPipe ], 
+    pipes: [ CurrencyPipe, SortingPipe ], 
     template: `
     <div>
         <h2>Transactions</h2>
@@ -14,11 +15,17 @@ import { CurrencyPipe } from './currency.pipe'
         <hr>
         Total: {{ totalAsDollars | currency }}
         
+        <div>
+            <button (click)="applySort('date')">Date</button>
+            <button (click)="applySort('amount')">Amount</button>
+            <button (click)="applySort('company')">Company</button>
+            <button (click)="applySort('date')">Ledger</button>
+        </div>        
         <ul>
-            <li *ngFor="let t of transactions">
+            <li *ngFor="let t of transactions | sortBy : sorting">
                 {{ t.date }}
                 {{ t.amountInDollars | currency }}
-                {{ t.company }} <b (click)="filterByLedger(t.ledger)"> {{ t.ledger }} </b>
+                {{ t.company }} <b (click)="applyFilter(t.ledger)"> {{ t.ledger }} </b>
                 
             </li>
         </ul>
@@ -28,7 +35,10 @@ import { CurrencyPipe } from './currency.pipe'
 export class TransactionListComponent implements OnInit {
     
     @Input() transactions: Transaction[]
+    @Input() sorting: string;
+    
     @Output() onCategoryFilter = new EventEmitter();
+    @Output() onSort = new EventEmitter();
     
     constructor() { }
 
@@ -47,8 +57,14 @@ export class TransactionListComponent implements OnInit {
         return this.total() / 100
     }
     
-    filterByLedger(ledger:string){
-        console.log(ledger)
+    
+    applySort(key:string){
+        this.onSort.emit({
+            key: key
+        })
+    }
+    
+    applyFilter(ledger:string){
         this.onCategoryFilter.emit({
             ledger: ledger
         })

@@ -13,7 +13,8 @@ import { Transaction } from './transactions.models'
     <div>
         <transaction-list 
             [transactions]="transactionList" 
-            (onCategoryFilter)="filterTransactions($event)">
+            (onCategoryFilter)="filterTransactions($event)"
+            (onSort)="sortTransactions($event)">
             <p *ngIf="filterBy">Filtered by: {{filterBy}}</p>
         </transaction-list>
         
@@ -42,6 +43,15 @@ export class TransactionsComponent implements OnInit {
     filterTransactions(ev:{ledger:string}){
         this.filterBy = ev.ledger
         this.transactionList = this.service.filterByLedger(this.transactionList, ev.ledger)
+    }
+    
+    sortTransactions(ev:any){
+        this.transactionList.sort((a,b) => {
+            if(a[ev.key] < b[ev.key]) return -1;
+            if(a[ev.key] > b[ev.key]) return 1;
+            return 0
+        })
+        
     }
     
     doReset(){
