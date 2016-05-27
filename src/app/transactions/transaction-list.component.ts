@@ -37,10 +37,13 @@ export class TransactionListComponent implements OnInit {
     @Input() transactions: Transaction[]
     @Input() sorting: string;
     
-    @Output() onCategoryFilter = new EventEmitter();
-    @Output() onSort = new EventEmitter();
+    sortModeAsc: boolean; 
     
-    constructor() { }
+    @Output() onCategoryFilter = new EventEmitter();
+    
+    constructor() {
+        this.sortModeAsc = true;
+    }
 
     ngOnInit() { }
     
@@ -57,11 +60,9 @@ export class TransactionListComponent implements OnInit {
         return this.total() / 100
     }
     
-    
     applySort(key:string){
-        this.onSort.emit({
-            key: key
-        })
+        this.sorting = this.sortModeAsc ? "+" + key : "-" + key
+        this.sortModeAsc = !this.sortModeAsc
     }
     
     applyFilter(ledger:string){
