@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
-import { Transaction, IRawTransaction } from './transactions.models'
-import * as lodash from 'lodash';
+import { Transaction, IRawTransaction } from '../models/transactions.models'
+import * as _ from 'lodash';
 
 interface ITransactionResponse {
     totalCount: number;
@@ -38,6 +38,9 @@ export class TransactionService {
         return fetchAll
     }
 
+    /**
+     * 
+     */
     fetchTransactions() {
         if (this.isReady && this.transactionList) {
             return new Promise((res, rej) => res(this.transactionList))
@@ -55,7 +58,7 @@ export class TransactionService {
                 let finalize = () => {
                     let count = this.transactionList.length
                     
-                    this.transactionList = lodash.uniqWith(this.transactionList, lodash.isEqual);
+                    this.transactionList = _.uniqWith(this.transactionList, _.isEqual);
                     //console.log(`Number of duplicates: ${ count - this.transactionList.length}`)
                     
                     this.isReady = true
@@ -76,22 +79,47 @@ export class TransactionService {
     }
 
 
-
+    /**
+     * filterByLedger()
+     * 
+     */
     filterByLedger(transactionList: Transaction[], ledger: string): Transaction[] {
         return transactionList.filter((t: Transaction) => {
             return t.ledger === ledger ? true : false
         })
     }
-
-    private extractData(res: Response) {
-        return res.json()
-    }
-
-    private handleError(error: any) {
-        let errMsg = (error.message) ? error.message :
-            error.status ? `${error.status} - ${error.statusText}` : 'Server error';
-        console.error(errMsg); // log to console instead
-        return Observable.throw(errMsg);
+    
+    /**
+     * summarizeByDate()
+     * 
+     */
+    summarizeByDate(transactionList: Transaction[]):Array<{date:any, total:number, transactions: Transaction[]}>{
+        
+        // First, group the transactions by their date. This will return a collection of dates with an array of Transactions 
+        // as the only property
+        let groupByDate: _.Dictionary<any> = _.groupBy(transactionList, 'date')
+        
+        // With this collection, I need to total each array, so start by mapping over the dates
+        let results = Object.keys(groupByDate).map(dateInstance => {
+            
+            // Use reduce to iterate over items and sum up the totals. To do this, I also need to simplify the Transaction object
+            // down to the amount, as that's the only value I need. I map over the transactions, returning only the amount, and 
+            // then run reduce over the results. That gives me the total
+            let dailyTotal = _.reduce(groupByDate[dateInstance].map( (t:Transaction) => t.amount), (sum:number ,n:number) => {
+                return sum+n    
+            }, 0)
+            
+            // Now, I want the total in ADDITION to the transactions that were used in the accumulator. Requirements don't 
+            // specifically call for this, but ... show your work. Plus, might make for nicer summary?
+            return {
+                date: dateInstance,
+                total: dailyTotal,
+                totalInDollars: dailyTotal / 100,
+                transactions: groupByDate[dateInstance]
+            }
+        })
+                
+        return results
     }
 
 }

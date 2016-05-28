@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Transaction } from './transactions.models'
-import { CurrencyPipe } from './currency.pipe' 
-import { SortingPipe } from './sorting.pipe' 
+import { Transaction } from './models/transactions.models'
+import { CurrencyPipe } from './pipes/currency.pipe' 
+import { SortingPipe } from './pipes/sorting.pipe' 
 
 @Component({
     moduleId: module.id,
@@ -11,8 +11,7 @@ import { SortingPipe } from './sorting.pipe'
     <div>
         <h2>Transactions</h2>
         <ng-content></ng-content>
-        
-        <hr>
+
         Total: {{ totalAsDollars | currency }}
         
         <div>
