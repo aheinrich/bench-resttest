@@ -6,6 +6,9 @@ export interface IRawTransaction {
 }
 
 export class Transaction {
+    
+    // static creditCardMatchPattern = new RegExp("(x{4,}\d{4}.*)").compile()
+    // static provinceLocationMatchPattern = new RegExp("\s(\w*)\s(AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$")
 
     source: IRawTransaction;
     
@@ -35,5 +38,35 @@ export class Transaction {
     
     get company(){
         return this.source.Company
+        // return this.companyClean
     }
+    
+    get companyClean(){ 
+        
+        // Creditcard match
+        let match = new RegExp("(x{4,})").exec(this.source.Company)
+        if (match){
+            return this.source.Company.slice(0, match.index)
+        }
+        
+        match = new RegExp("(AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$").exec(this.source.Company)
+        if (match){
+            console.log(/\s+(\w*)\s+(AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$/.exec(this.source.Company))
+            return this.source.Company.slice(0, match.index)
+        }
+        
+        
+        // Location Match
+        // let stringTest = this.source.Company.toLowerCase()
+        // let match = new RegExp("(.*)(vancouver)").exec(stringTest)
+        // console.log(match)
+
+        return this.source.Company
+    }
+    
+    
 }
+//         console.log(stringTest.match("\s(\w*)\s(AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$"))
+
+// let creditCardMatchPattern = "(x{4,}\d{4}.*)"
+// let provinceLocationMatchPattern = "\s(\w*)\s(AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$"

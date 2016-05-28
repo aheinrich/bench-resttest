@@ -25,8 +25,10 @@ import { SortingPipe } from './sorting.pipe'
             <li *ngFor="let t of transactions | sortBy : sorting">
                 {{ t.date }}
                 {{ t.amountInDollars | currency }}
-                {{ t.company }} <b (click)="applyFilter(t.ledger)"> {{ t.ledger }} </b>
-                
+                <span (click)="t.showClean=!t.showClean"> {{ t.company }}
+                    <p *ngIf="t.showClean"> {{ t.companyClean }}</p>
+                </span>
+                <b (click)="applyFilter(t.ledger)"> {{ t.ledger }} </b>
             </li>
         </ul>
     </div>
