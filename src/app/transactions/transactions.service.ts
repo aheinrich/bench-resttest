@@ -55,7 +55,8 @@ export class TransactionService {
                 }
                 
                 let catchErrors = (err: any) => {
-                    reject(err)
+                    // Log out the error...
+                    reject(new Error("Unable to fetch transactions"))
                 }
                 
                 let finalize = () => {

@@ -29,6 +29,9 @@ import { MD_PROGRESS_BAR_DIRECTIVES } from '@angular2-material/progress-bar'
             
             <button (click)="getTransactions()">Fetch Data</button>
             <button (click)="doReset()">Reset Filter</button>
+            <div *ngIf="errorMsg" class="error">
+                {{errorMsg}}
+            </div>
         </div>
             
     </div>
@@ -38,6 +41,7 @@ import { MD_PROGRESS_BAR_DIRECTIVES } from '@angular2-material/progress-bar'
 export class TransactionsComponent implements OnInit {
     
     loading:boolean;
+    errorMsg:string;
     transactionList:Transaction[]
     filterBy: string;
     
@@ -56,6 +60,9 @@ export class TransactionsComponent implements OnInit {
                 setTimeout(() => {
                     this.loading = false;
                 }, 500)
+            }, error => {
+                this.loading = false;
+                this.errorMsg = error.message
             }
         )
     }
