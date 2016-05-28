@@ -9,7 +9,6 @@ import { SortingPipe } from './sorting.pipe'
     pipes: [ CurrencyPipe, SortingPipe ], 
     template: `
     <div>
-        <h2>Transactions</h2>
         <ng-content></ng-content>
         
         <hr>

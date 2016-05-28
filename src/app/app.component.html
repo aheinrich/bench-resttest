@@ -1,0 +1,27 @@
+<md-sidenav-layout fullscreen>
+
+    <md-sidenav mode="side" #sidenav>
+        
+        <md-toolbar color="primary" style="height:100px">
+            Navigation Menu
+        </md-toolbar>
+        
+    </md-sidenav>
+
+    <md-toolbar color="primary">
+        <button md-icon-button (click)="sidenav.open()">
+            <md-icon>menu</md-icon>
+        </button> 
+        
+        <span class="header">
+            <md-icon svgSrc="/public/logo.svg"></md-icon>    
+        </span>
+        
+        <md-icon>search</md-icon>
+        
+    </md-toolbar>
+
+    <transactions></transactions>
+    
+</md-sidenav-layout>
+
