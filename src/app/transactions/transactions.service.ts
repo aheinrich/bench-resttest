@@ -19,9 +19,15 @@ export class TransactionService {
     isReady:boolean;
 
     serviceUrl: string;
+    transactionResource: string;
 
     constructor(private http: Http) {
-        this.serviceUrl = "http://localhost:8000/"
+        //this.serviceUrl = "http://localhost:8000/"
+        this.transactionResource = "transactions/"
+        
+        this.serviceUrl = "http://localhost:3000/"
+        this.transactionResource = ""
+        
         this.transactionList = []
         this.isReady = false
     }
@@ -30,7 +36,7 @@ export class TransactionService {
         let transactionList: Array<any> = []
 
         let fetchAll = Observable.range(1, 4).flatMap(pageNumber => {
-            return this.http.get(this.serviceUrl + "transactions/" + pageNumber + ".json").map(response => {
+            return this.http.get(this.serviceUrl + this.transactionResource + pageNumber + ".json").map(response => {
                 return response.json()
             })
         })
