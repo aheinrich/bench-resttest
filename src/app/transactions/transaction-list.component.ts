@@ -18,16 +18,15 @@ import { SortingPipe } from './pipes/sorting.pipe'
             <button (click)="applySort('date')">Date</button>
             <button (click)="applySort('amount')">Amount</button>
             <button (click)="applySort('company')">Company</button>
-            <button (click)="applySort('date')">Ledger</button>
+            <button (click)="applySort('ledger')">Ledger</button>
         </div>        
         <ul>
             <li *ngFor="let t of transactions | sortBy : sorting">
-                {{ t.date }}
+                {{ t.date | date }}
+                [<b (click)="applyFilter(t.ledger)"> {{ t.ledger }} </b>]
+                {{ t.company }}
                 {{ t.amountInDollars | currency }}
-                <span (click)="t.showClean=!t.showClean"> {{ t.company }}
-                    <p *ngIf="t.showClean"> {{ t.companyClean }}</p>
-                </span>
-                <b (click)="applyFilter(t.ledger)"> {{ t.ledger }} </b>
+                
             </li>
         </ul>
     </div>

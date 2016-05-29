@@ -1,3 +1,5 @@
+import * as moment from 'moment';
+
 export interface IRawTransaction {
     "Date": string,
     "Ledger": string,
@@ -6,67 +8,139 @@ export interface IRawTransaction {
 }
 
 export class Transaction {
-    
+
     // static creditCardMatchPattern = new RegExp("(x{4,}\d{4}.*)").compile()
     // static provinceLocationMatchPattern = new RegExp("\s(\w*)\s(AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$")
 
-    source: IRawTransaction;
-    
-    static fromJSON(data:IRawTransaction) {
+    private source: IRawTransaction;
+    private _date: Date;
+    private _value: number;
+    private _company: string;
+
+    /**
+     * Generator
+     */
+    static fromJSON(data: IRawTransaction) {
         let t = new Transaction()
         t.source = data;
         return t
     }
-    
-    constructor() {}
-    
-    get date(){
-        return this.source.Date
+
+    // Use Transaction.fromJSON() instead
+    constructor() { }
+
+    /**
+     * Transaction.amount
+     */
+    get amount(): number {
+        if (!this._value) {
+
+            // Need to convert string to number; Dont want to introduce floating point calculation on 
+            // fraction of currency. 
+            //
+            try {
+                let decimal = this.source.Amount.indexOf(".")
+                
+                // There is no decimal in the value
+                if (decimal == -1){
+                    this._value = Number.parseInt(this.source.Amount) * 100
+                } 
+                // Super hacky, and pretty much garbage. Re-write this (!!)
+                else {
+                    let fractions = (this.source.Amount.length - decimal - 1)
+                    if (fractions == 2){
+                        this._value = Number.parseInt(this.source.Amount.replace(".", ""))
+                    } else if (fractions == 1) {
+                        this._value = Number.parseInt(this.source.Amount.replace(".", "")) * 10
+                    }
+                }
+            } catch (err) {
+                throw err
+            }
+
+        }
+        return this._value
     }
-    
-    get ledger(){
-        return this.source.Ledger
-    }
-    
-    get amount(){
-        return Number.parseFloat(this.source.Amount) * 100
-    }
-    
-    get amountInDollars(){
+
+    /**
+     * Transaction.amountInDollars
+     */
+    get amountInDollars(): number {
         return this.amount / 100
     }
-    
-    get company(){
-        return this.source.Company
-        // return this.companyClean
+
+    /**
+     * Transaction.ledger
+     */
+    get ledger() : string {
+        return this.source.Ledger
+    }
+
+    /**
+     * Transaction.date
+     */
+    get date(): Date {
+        if (!this._date) {
+            try {
+                let m = moment(this.source.Date, "YYYY-MM-DD")
+                this._date = m.toDate()
+            } catch (err) {
+                throw err
+            }
+        }
+        return this._date
     }
     
-    get companyClean(){ 
-        
+    /**
+     * Transaction.date
+     */
+    get dateTimestamp():number {
+        return Number.parseInt(moment(this.date).format("x"))
+    }
+
+    /**
+     * Transaction.company
+     */
+    get company(): string {
+        if (!this._company) {
+            this._company = this.sanitizeCompany(this.source.Company)
+        }
+        return this._company
+    }
+
+
+    /**
+     * sanitizeCompany()
+     * 
+     * Used to cleanup company description, remove garbage
+     */
+    private sanitizeCompany(source: string): string {
+        let match: RegExpExecArray
+
         // Creditcard match
-        let match = new RegExp("(x{4,})").exec(this.source.Company)
-        if (match){
-            return this.source.Company.slice(0, match.index)
+        match = new RegExp("(x{4,})").exec(source)
+        if (match) {
+            return source.slice(0, match.index)
         }
-        
-        match = new RegExp("(AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$").exec(this.source.Company)
-        if (match){
-            console.log(/\s+(\w*)\s+(AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$/.exec(this.source.Company))
-            return this.source.Company.slice(0, match.index)
-        }
-        
-        
-        // Location Match
-        // let stringTest = this.source.Company.toLowerCase()
-        // let match = new RegExp("(.*)(vancouver)").exec(stringTest)
-        // console.log(match)
 
-        return this.source.Company
+        // City-Provice location match
+        match = /^(.*)\s+(\w*)\s+(AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$/.exec(source)
+        if (match) {
+            return match[1]
+        }
+
+        // Unable to find a suitable match to cleanup
+        return source
     }
     
-    
-}
-//         console.log(stringTest.match("\s(\w*)\s(AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$"))
+    dateAsFormat(format:string):string{
+        return moment(this.date).format(format)
+    }
 
-// let creditCardMatchPattern = "(x{4,}\d{4}.*)"
-// let provinceLocationMatchPattern = "\s(\w*)\s(AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$"
+
+}
+
+
+class Balance {
+    startingBalance: number;
+}

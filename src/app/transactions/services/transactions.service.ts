@@ -97,29 +97,38 @@ export class TransactionService {
         
         // First, group the transactions by their date. This will return a collection of dates with an array of Transactions 
         // as the only property
-        let groupByDate: _.Dictionary<any> = _.groupBy(transactionList, 'date')
-        
+        let groupByTimestamp: _.Dictionary<any> = _.groupBy(transactionList, 'dateTimestamp')
+                
         // With this collection, I need to total each array, so start by mapping over the dates
-        let results = Object.keys(groupByDate).map(dateInstance => {
+        let results = Object.keys(groupByTimestamp).map(dateTimestamp => {
             
             // Use reduce to iterate over items and sum up the totals. To do this, I also need to simplify the Transaction object
             // down to the amount, as that's the only value I need. I map over the transactions, returning only the amount, and 
             // then run reduce over the results. That gives me the total
-            let dailyTotal = _.reduce(groupByDate[dateInstance].map( (t:Transaction) => t.amount), (sum:number ,n:number) => {
+            let dailyTotal = _.reduce(groupByTimestamp[dateTimestamp].map( (t:Transaction) => t.amount), (sum:number ,n:number) => {
                 return sum+n    
             }, 0)
             
             // Now, I want the total in ADDITION to the transactions that were used in the accumulator. Requirements don't 
             // specifically call for this, but ... show your work. Plus, might make for nicer summary?
             return {
-                date: dateInstance,
+                date: new Date(Number.parseInt(dateTimestamp)),
                 total: dailyTotal,
                 totalInDollars: dailyTotal / 100,
-                transactions: groupByDate[dateInstance]
+                transactions: groupByTimestamp[dateTimestamp]
             }
         })
+        
+        console.log(results)
                 
         return results
+    }
+    
+    generateDailyBalance(){
+        
+        return {
+            startingBalance: 0
+        }
     }
 
 }
