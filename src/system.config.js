@@ -11,6 +11,7 @@
     'rxjs': 'node_modules/rxjs',
     '@angular': 'node_modules/@angular',
     '@angular2-material': 'node_modules/@angular2-material',
+    'moment': 'node_modules/moment/moment.js',
     'lodash': 'node_modules/lodash/lodash.js'
   };
 
