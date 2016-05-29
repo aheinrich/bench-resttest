@@ -1,67 +1,65 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Transaction } from './index'
+import { Transaction, Utilities, ITransactionGroup, CurrencyPipe } from './index'
 import * as _ from 'lodash';
 
 @Component({
     moduleId: module.id,
     selector: 'transaction-balance',
+    pipes: [ CurrencyPipe ],
     template: `
     <div>
-        <h2>Balance Sheet</h2>
-        
-        Starting Balance: {{balance.startingBalance}}
-        
-        <ul>
-            <li *ngFor="let d of balance.dailyBalance ; let i = index" >
-                {{ d.date | date }} - {{ d.balance }}
-            </li>
-        </ul>
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Balance</th>
+            </tr>
+            <tr *ngFor="let group of dailyTotals">
+                <td> {{ group.date | date }} </td>
+                <td> {{ group.total | basicCurrency : "dollars" }} </td>
+                <td> {{ group.balance | basicCurrency : "dollars" }} </td>
+            </tr>
+        </table>
     </div>
     `
 })
 export class TransactionBalanceComponent implements OnInit {
     
     @Input() transactions: Transaction[]
+    @Input() startingBalance: number = 0
+    
+    dailyTotals: ITransactionGroup[]
     
     constructor() { }
 
     ngOnInit() {
-        console.log(`There are ${this.transactions.length} transactions`)
-        
-        let groupByTimestamp: _.Dictionary<any> = _.groupBy(this.transactions, 'dateTimestamp')
-        
-        console.log(`Group by date timestamp, there are ${Object.keys(groupByTimestamp).length} groups of transactions`)
-        
+        this.dailyTotals = this.calculateDailyBalance()
     }
-    
-    
-    balanceDate(index:number, group:any) {
-        console.log(group)
-        return group.date ;
-    }
-    
-    get balance() {
-        let groupByTimestamp: _.Dictionary<any> = _.groupBy(this.transactions, 'dateTimestamp')
-        let dailyBalance = Object.keys(groupByTimestamp).sort()
+       
+    /**
+     * 
+     * 
+     */
+    calculateDailyBalance(){
+        let results: ITransactionGroup[]
         
-        let balance = 0
-        let r = dailyBalance.map( timestamp => {
-            let dailyTotal = _.reduce(groupByTimestamp[timestamp].map( (t:Transaction) => t.amount), (sum:number ,n:number) => {
-                return sum+n    
-            }, 0)
-            
-            balance = balance + dailyTotal
-            return {
-                date: new Date(Number.parseInt(timestamp)),
-                total: dailyTotal,
-                balance: balance
+        let dailyTotals:ITransactionGroup[] = Utilities.calculateDailyTotals(this.transactions);
+        
+        // Sort by Date
+        results = dailyTotals.sort( (a,b) => {
+            return a.date > b.date ? 1 : -1
+        })
+        // Calculate balance
+        .map( (current:ITransactionGroup, i:number, group: ITransactionGroup[]) => {
+            if (i == 0) {
+                current.balance = this.startingBalance + current.total
+            } else {
+                current.balance = group[i-1].balance + current.total
             }
+            return current
         })
         
-        return {
-            startingBalance: 0,
-            dailyBalance: r
-        }
+        return results;
     }
 
 }
