@@ -2,3 +2,13 @@
     display: flex;
     flex: auto;
 }
+
+.box {
+    border: 1px solid grey;
+}
+
+:host /deep/ .box {
+   margin: 16px;
+   padding: 8px;
+   border: 1px solid grey;
+}
