@@ -16,7 +16,7 @@ import { Transaction, Utilities, CurrencyPipe, SortingPipe } from './index'
             </tr>
             <tr *ngFor="let s of summaryList | sortBy : 'date' ">
                 <td> {{ s.date | date }} </td>
-                <td> {{ totalDollars(s.total) | currency }} </td>
+                <td> {{ s.total | basicCurrency : "dollars" }} </td>
             </tr>
         </table>
     </div>
@@ -32,9 +32,5 @@ export class TransactionSummaryComponent implements OnInit {
     
     get summaryList(){
         return Utilities.calculateDailyTotals(this.transactions)
-    }
-    
-    totalDollars(value:number){
-        return value / 100
     }
 }

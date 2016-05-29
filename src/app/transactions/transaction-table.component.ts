@@ -8,7 +8,7 @@ import { Transaction, CurrencyPipe, SortingPipe } from './index'
     pipes: [ CurrencyPipe, SortingPipe ], 
     template: `
     <div class="box">
-        <h3>Total: {{ totalAsDollars | currency }} </h3>
+        <h3>Total: {{ totalAsDollars | basicCurrency }} </h3>
         <table>
             <thead>
                 <tr>

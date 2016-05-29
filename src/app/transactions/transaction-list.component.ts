@@ -8,7 +8,7 @@ import { Transaction, CurrencyPipe, SortingPipe } from './index'
     pipes: [ CurrencyPipe, SortingPipe ], 
     template: `
     <div class="box">
-        <h3>Total: {{ totalAsDollars | currency }} </h3>
+        <h3>Total: {{ totalAsDollars | basicCurrency }} </h3>
         
         <ng-content></ng-content>
         
@@ -23,7 +23,7 @@ import { Transaction, CurrencyPipe, SortingPipe } from './index'
                 {{ t.date | date }}
                 [<b (click)="applyFilter(t.ledger)"> {{ t.ledger }} </b>]
                 {{ t.company }}
-                {{ t.amountInDollars | currency }}
+                {{ t.amountInDollars | basicCurrency }}
                 
             </li>
         </ul>
