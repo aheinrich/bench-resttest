@@ -1,20 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 
-import { TransactionListComponent } from './transaction-list.component';
-import { TransactionBalanceComponent } from './transaction-balance.component';
-
-import { TransactionService } from './services/transactions.service'
-import { Transaction } from './models/transactions.models'
-import { CurrencyPipe } from './pipes/currency.pipe' 
-import { SortingPipe } from './pipes/sorting.pipe' 
-
+import { 
+    CurrencyPipe,
+    SortingPipe,
+    Transaction,
+    TransactionService, 
+    TransactionListComponent, 
+    TransactionTableComponent,
+    TransactionSummaryComponent,
+    TransactionBalanceComponent} from './index';
 
 @Component({
     moduleId: module.id,
     selector: 'transactions',
     styleUrls: ['transactions.component.css'],
-    pipes: [ CurrencyPipe, SortingPipe ], 
-    directives: [ TransactionListComponent, TransactionBalanceComponent ],
+    pipes: [ 
+        CurrencyPipe, 
+        SortingPipe 
+    ], 
+    directives: [ 
+        TransactionListComponent, 
+        TransactionTableComponent,
+        TransactionSummaryComponent,
+        TransactionBalanceComponent 
+    ],
     providers: [ TransactionService ],
     template: `
     <div>
@@ -36,34 +45,30 @@ import { SortingPipe } from './pipes/sorting.pipe'
         </ol>
        
         <button (click)="getTransactions()">Get Started - Fetch Data</button>
+        <button (click)="doList()">Toggle List</button>
+        <button (click)="doTable()">Toggle Table</button>
         <button (click)="doSummary()">Toggle Summary</button>
         <button (click)="doBalance()">Toggle Balance</button>
         <button (click)="doReset()">Reset View</button>
 
         <hr>
         
-        <div class="container">
+        <div *ngIf="filterBy">
+            <h3 >Filtered by: {{filterBy}}</h3>
+            <button (click)="getTransactions()" >Clear</button>
+        </div>
         
-            <transaction-list [transactions]="transactionList" (onCategoryFilter)="filterTransactions($event)">
-                <p *ngIf="filterBy">Filtered by: {{filterBy}}</p>
+        <div class="container">
+            
+            <transaction-list *ngIf="showList" [transactions]="transactionList" (onCategoryFilter)="filterTransactions($event)">
+                
             </transaction-list>
+            
+            <transaction-table *ngIf="showTable" [transactions]="transactionList" (onCategoryFilter)="filterTransactions($event)"></transaction-table>
             
             <transaction-balance *ngIf="showBalance" [transactions]="transactionList"></transaction-balance>
             
-            <div *ngIf="showSummary">
-                <h2>Daily Summary</h2>
-                <ul>
-                    <li *ngFor="let s of summaryList | sortBy : 'date' " (click)="s.showTransactions=!s.showTransactions">
-                        {{ s.date | date }}
-                        {{ s.totalInDollars | currency }}
-                        <ul *ngIf="s.showTransactions">
-                            <li *ngFor="let t of s.transactions">
-                                {{ t.amountInDollars | currency }} :: {{ t.company }}
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+            <transaction-summary *ngIf="showSummary" [transactions]="transactionList"></transaction-summary>
             
         </div>
         
@@ -78,6 +83,9 @@ export class TransactionsComponent implements OnInit {
     transactionList:Transaction[]
     summaryList:any;
     filterBy: string;
+    
+    showList:boolean;
+    showTable:boolean;
     showSummary:boolean;
     showBalance:boolean;
     
@@ -90,6 +98,7 @@ export class TransactionsComponent implements OnInit {
     }
     
     getTransactions(){
+        this.filterBy = undefined;
         this.service.fetchTransactions().then(
             results => {
                 this.transactionList = results
@@ -105,10 +114,21 @@ export class TransactionsComponent implements OnInit {
     }
     
     doReset(){
+        this.showList = true;
+        this.showTable = false;
         this.showSummary = false;
         this.showBalance = false;
         this.filterBy = undefined;
         this.getTransactions()
+    }
+    
+    
+    doList(){
+        this.showList = !this.showList
+    }
+    
+    doTable(){
+        this.showTable = !this.showTable
     }
     
     doSummary(){

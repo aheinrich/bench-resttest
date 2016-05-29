@@ -1,18 +1,16 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Transaction } from './models/transactions.models'
-import { CurrencyPipe } from './pipes/currency.pipe' 
-import { SortingPipe } from './pipes/sorting.pipe' 
+
+import { Transaction, CurrencyPipe, SortingPipe } from './index'
 
 @Component({
     moduleId: module.id,
     selector: 'transaction-list',
     pipes: [ CurrencyPipe, SortingPipe ], 
     template: `
-    <div>
-        <h2>Transactions</h2>
+    <div class="box">
+        <h3>Total: {{ totalAsDollars | currency }} </h3>
+        
         <ng-content></ng-content>
-
-        Total: {{ totalAsDollars | currency }}
         
         <div>
             <button (click)="applySort('date')">Date</button>
