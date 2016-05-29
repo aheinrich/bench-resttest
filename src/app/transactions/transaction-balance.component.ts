@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Transaction } from './models/transactions.models'
+import { Transaction } from './index'
 import * as _ from 'lodash';
 
 @Component({
