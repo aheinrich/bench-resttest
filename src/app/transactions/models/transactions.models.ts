@@ -7,12 +7,15 @@ export interface IRawTransaction {
     "Company": string
 }
 
+/**
+ * Transaction
+ * 
+ */
 export class Transaction {
-
-    // static creditCardMatchPattern = new RegExp("(x{4,}\d{4}.*)").compile()
-    // static provinceLocationMatchPattern = new RegExp("\s(\w*)\s(AB|BC|MB|NB|NL|NT|NS|NU|ON|PE|QC|SK|YT)$")
-
+    
+    // Raw data, as provided. Not externally accessable
     private source: IRawTransaction;
+    
     private _date: Date;
     private _value: number;
     private _company: string;
@@ -23,6 +26,12 @@ export class Transaction {
     static fromJSON(data: IRawTransaction) {
         let t = new Transaction()
         t.source = data;
+        
+        // Validation
+        if (!moment(t.source.Date).isValid()){
+            throw Error("Please verify the Date provided is in an acceptable format...")
+        }
+        
         return t
     }
 
@@ -31,13 +40,14 @@ export class Transaction {
 
     /**
      * Transaction.amount
+     * 
+     * Getter: provides the value of the Transaction in a numeric format. 
      */
     get amount(): number {
         if (!this._value) {
 
             // Need to convert string to number; Dont want to introduce floating point calculation on 
             // fraction of currency. 
-            //
             try {
                 let decimal = this.source.Amount.indexOf(".")
                 
@@ -64,6 +74,8 @@ export class Transaction {
 
     /**
      * Transaction.amountInDollars
+     * 
+     * Getter: provides the value of the Transaction in numeric format, converted to a fraction (dollars)
      */
     get amountInDollars(): number {
         return this.amount / 100
@@ -71,6 +83,8 @@ export class Transaction {
 
     /**
      * Transaction.ledger
+     * 
+     * Getter: provides the category of the Transaction
      */
     get ledger() : string {
         return this.source.Ledger
@@ -78,6 +92,8 @@ export class Transaction {
 
     /**
      * Transaction.date
+     * 
+     * Getter: provides the date of the Transaction
      */
     get date(): Date {
         if (!this._date) {
@@ -128,6 +144,12 @@ export class Transaction {
         if (match) {
             return match[1]
         }
+        
+        // Payment
+        match = /^(.*)PAYMENT(.*)$/.exec(source)
+        if (match) {
+            return "PAYMENT"
+        }
 
         // Unable to find a suitable match to cleanup
         return source
@@ -141,6 +163,3 @@ export class Transaction {
 }
 
 
-class Balance {
-    startingBalance: number;
-}
