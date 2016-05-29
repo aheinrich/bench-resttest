@@ -5,6 +5,7 @@ import * as moment from 'moment'
 export interface ITransactionGroup {
     date: Date,
     total: number,
+    balance: number,
     transactions: Transaction[]
 }
 
@@ -20,6 +21,7 @@ export class Utilities {
             return {
                 date: new Date(Number.parseInt(dateTimestamp)),
                 total: dailyTotal,
+                balance: 0,
                 transactions: groupByTimestamp[dateTimestamp]
             }
         })
