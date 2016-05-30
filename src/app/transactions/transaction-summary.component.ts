@@ -1,12 +1,11 @@
-import { Component, OnInit, Input} from '@angular/core';
+import { Component, OnInit, Input} from "@angular/core";
 
-import { Transaction, Utilities, CurrencyPipe, SortingPipe } from './index'
-
+import { Transaction, Utilities, CurrencyPipe, SortingPipe } from "./index";
 
 @Component({
     moduleId: module.id,
-    selector: 'transaction-summary',
-    pipes: [ SortingPipe, CurrencyPipe ], 
+    selector: "transaction-summary",
+    pipes: [SortingPipe, CurrencyPipe],
     template: `
     <div class="box">
         <table>
@@ -23,14 +22,18 @@ import { Transaction, Utilities, CurrencyPipe, SortingPipe } from './index'
     `
 })
 export class TransactionSummaryComponent implements OnInit {
-    
-    @Input() transactions: Transaction[]
-    
-    constructor() { }
 
-    ngOnInit() { }
-    
-    get summaryList(){
-        return Utilities.calculateDailyTotals(this.transactions)
+    @Input() transactions: Transaction[];
+
+    constructor() {
+        // Nothing to do
+    }
+
+    ngOnInit() {
+        // Nothing to do
+    }
+
+    get summaryList() {
+        return Utilities.calculateDailyTotals(this.transactions);
     }
 }

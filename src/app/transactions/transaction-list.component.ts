@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 
-import { Transaction, CurrencyPipe, SortingPipe } from './index'
+import { Transaction, CurrencyPipe, SortingPipe } from "./index";
 
 @Component({
     moduleId: module.id,
-    selector: 'transaction-list',
-    pipes: [ CurrencyPipe, SortingPipe ], 
+    selector: "transaction-list",
+    pipes: [CurrencyPipe, SortingPipe],
     template: `
     <div class="box">
         <h3>Total: {{ totalAsDollars | basicCurrency }} </h3>
@@ -31,42 +31,42 @@ import { Transaction, CurrencyPipe, SortingPipe } from './index'
     `
 })
 export class TransactionListComponent implements OnInit {
-    
-    @Input() transactions: Transaction[]
+    @Input() transactions: Transaction[];
     @Input() sorting: string;
-    
-    sortModeAsc: boolean; 
-    
+
+    sortModeAsc: boolean;
+
     @Output() onCategoryFilter = new EventEmitter();
-    
+
     constructor() {
         this.sortModeAsc = true;
     }
 
-    ngOnInit() { }
-    
-    total(){
-        let total = 0
-        
-        this.transactions.forEach( (t:Transaction) => {
-            total = total + t.amount
-        })
-        return total
-    }
-    
-    get totalAsDollars(){
-        return this.total() / 100
-    }
-    
-    applySort(key:string){
-        this.sorting = this.sortModeAsc ? "+" + key : "-" + key
-        this.sortModeAsc = !this.sortModeAsc
-    }
-    
-    applyFilter(ledger:string){
-        this.onCategoryFilter.emit({
-            ledger: ledger
-        })
+    ngOnInit() {
+        // Nothing to do?
     }
 
+    total() {
+        let total = 0;
+
+        this.transactions.forEach((t: Transaction) => {
+            total = total + t.amount;
+        });
+        return total;
+    }
+
+    get totalAsDollars() {
+        return this.total() / 100;
+    }
+
+    applySort(key: string) {
+        this.sorting = this.sortModeAsc ? "+" + key : "-" + key;
+        this.sortModeAsc = !this.sortModeAsc;
+    }
+
+    applyFilter(ledger: string) {
+        this.onCategoryFilter.emit({
+            ledger: ledger;
+        });
+    }
 }

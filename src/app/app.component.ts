@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { TransactionsComponent } from './transactions/transactions.component';
+import { Component, OnInit } from "@angular/core";
+import { TransactionsComponent } from "./transactions/transactions.component";
 
 @Component({
     moduleId: module.id,
-    selector: 'app',
-    styleUrls: ['app.component.css'],
+    selector: "app",
+    styleUrls: ["app.component.css"],
     directives: [ TransactionsComponent ],
     template: `
     <h1>App</h1>
@@ -12,10 +12,12 @@ import { TransactionsComponent } from './transactions/transactions.component';
     `,
 })
 export class AppComponent implements OnInit {
-    
-    constructor() { }
 
-    ngOnInit() {}
-    
+    constructor() {
+        //Nothing to do here...
+    }
 
+    ngOnInit() {
+        //Nothing to do here...
+    }
 }
