@@ -5,6 +5,7 @@ import {
     SortingPipe,
     Transaction,
     TransactionService,
+    TransactionIntroComponent,
     TransactionListComponent,
     TransactionTableComponent,
     TransactionSummaryComponent,
@@ -19,6 +20,7 @@ import {
         SortingPipe
     ],
     directives: [
+        TransactionIntroComponent,
         TransactionListComponent,
         TransactionTableComponent,
         TransactionSummaryComponent,
@@ -26,60 +28,56 @@ import {
     ],
     providers: [TransactionService],
     template: `
-    <div>
-    
-        <h2>My Submission</h2>
-        <p>This is my submission for Bench's RestTest</p>
-
-        <h2>Requirements</h2>
-        <ol>
-            <li>We would like you to write an app that connects to an API, downloads all the data, and has a function that will calculate
-             the total balance</li>
-        </ol>
-
-        <h2>Additional Features</h2>
-        <ol>
-            <li>As a user, I need vendor names to be easily readable. Make the vendor names more readable, remove garbage from names.</li>
-            <li>As a user, I do not want to have any duplicated transactions in the list. Use the data provided to detect and identify 
-              duplicate transactions.</li>
-            <li>As a user, I need to get a list expense categories. For each category I need a list of transactions, and the total 
-              expenses for that category.</li>
-            <li>As a user, I need to calculate daily calculated balances. A running total for each day. For example, if I have 3 
-              transactions for the 5th 6th 7th, each for $5, then the daily balance on the 6th would be $10.</li>
-        </ol>
-       
-        <button (click)="getTransactions()">Get Started - Fetch Data</button>
-        <button (click)="doList()">Toggle List</button>
-        <button (click)="doTable()">Toggle Table</button>
-        <button (click)="doSummary()">Toggle Summary</button>
-        <button (click)="doBalance()">Toggle Balance</button>
-        <button (click)="doReset()">Reset View</button>
-
-        <hr>
+    <div class='row'>
+        <div class="col-md-3">
         
-        <div *ngIf="filterBy">
-            <h3 >Filtered by: {{filterBy}}</h3>
-            <button (click)="getTransactions()" >Clear</button>
+            <ul class="nav nav-pills nav-stacked">
+                <li role="presentation" (click)="setState('intro')">
+                    <a>Intro</a>
+                </li>
+                <li role="presentation" (click)="setState('list')">
+                    <a>Show List</a>
+                </li>
+                <li role="presentation" (click)="setState('table')">
+                    <a>Show Table</a>
+                </li>
+                <li role="presentation" (click)="doSummary()">
+                    <a>Daily Summary</a>
+                </li>
+                <li role="presentation" (click)="doBalance()">
+                    <a>Daily Balance</a>
+                </li>
+                <li role="presentation" (click)="doReset()">
+                    <a>Reset Views</a>
+                </li>
+            </ul>            
         </div>
-        
-        <div class="container">
+        <div class="col-md-9">
             
-            <transaction-list *ngIf="showList" 
+            <transaction-intro *ngIf="uiView==='intro'"></transaction-intro>
+
+            <transaction-list *ngIf="uiView==='list'"
                 [transactions]="transactionList" 
                 (onCategoryFilter)="filterTransactions($event)">
             </transaction-list>
             
-            <transaction-table *ngIf="showTable" 
+            <transaction-table *ngIf="uiView==='table'"
                 [transactions]="transactionList" 
                 (onCategoryFilter)="filterTransactions($event)">
             </transaction-table>
+        </div>
+        
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            
             
             <transaction-balance *ngIf="showBalance" [transactions]="transactionList"></transaction-balance>
             
             <transaction-summary *ngIf="showSummary" [transactions]="transactionList"></transaction-summary>
             
         </div>
-        
     </div>
     `
 })
@@ -89,6 +87,9 @@ export class TransactionsComponent implements OnInit {
     summaryList: any;
     filterBy: string;
 
+    uiView:string;
+    
+    showIntro: boolean;
     showList: boolean;
     showTable: boolean;
     showSummary: boolean;
@@ -96,12 +97,17 @@ export class TransactionsComponent implements OnInit {
 
     constructor(private service: TransactionService) {
         this.transactionList = [];
+        this.uiView = 'intro'
     }
 
     ngOnInit() {
         this.doReset();
     }
 
+    setState(state:string){
+        this.uiView = state;
+        
+    }
     getTransactions() {
         this.filterBy = undefined;
         this.service.fetchTransactions().then(

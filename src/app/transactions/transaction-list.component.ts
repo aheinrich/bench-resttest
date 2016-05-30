@@ -7,27 +7,28 @@ import { Transaction, CurrencyPipe, SortingPipe } from "./index";
     selector: "transaction-list",
     pipes: [CurrencyPipe, SortingPipe],
     template: `
-    <div class="box">
-        <h3>Total: {{ totalAsDollars | basicCurrency }} </h3>
-        
-        <ng-content></ng-content>
-        
-        <div>
-            <button (click)="applySort('date')">Date</button>
-            <button (click)="applySort('amount')">Amount</button>
-            <button (click)="applySort('company')">Company</button>
-            <button (click)="applySort('ledger')">Ledger</button>
-        </div>        
-        <ul>
-            <li *ngFor="let t of transactions | sortBy : sorting">
-                {{ t.date | date }}
-                [<b (click)="applyFilter(t.ledger)"> {{ t.ledger }} </b>]
-                {{ t.company }}
-                {{ t.amountInDollars | basicCurrency }}
-                
-            </li>
-        </ul>
-    </div>
+    <h3>Total: {{ totalAsDollars | basicCurrency }} </h3>
+    
+    <ng-content></ng-content>
+    
+    <ul class="nav nav-pills">
+        <li role="presentation" (click)="applySort('date')"><a>Date</a></li>
+        <li role="presentation" (click)="applySort('amount')"><a>Amount</a></li>
+        <li role="presentation" (click)="applySort('company')"><a>Company</a></li>
+        <li role="presentation" (click)="applySort('ledger')"><a>Ledger</a></li>
+    </ul>
+
+    <ul class="list-group">
+        <li class="list-group-item" *ngFor="let t of transactions | sortBy : sorting">
+            <div class="list-group">
+                <h4 class="list-group-item-heading">{{ t.date | date }} - {{ t.company }}</h4>
+                <p class="list-group-item-text">{{ t.amountInDollars | basicCurrency }}</p>
+            </div>
+            
+            [<b (click)="applyFilter(t.ledger)"> {{ t.ledger }} </b>]
+            
+        </li>
+    </ul>
     `
 })
 export class TransactionListComponent implements OnInit {

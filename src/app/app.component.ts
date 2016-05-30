@@ -5,10 +5,22 @@ import { TransactionsComponent } from "./transactions/transactions.component";
     moduleId: module.id,
     selector: "app",
     styleUrls: ["app.component.css"],
-    directives: [ TransactionsComponent ],
+    directives: [TransactionsComponent],
     template: `
-    <h1>App</h1>
-    <transactions></transactions>
+    <nav class="navbar navbar-default">
+        <div class="navbar-header">
+            <h1>Header</h1>
+        </div>
+            <ul class="nav navbar-nav">
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+            </ul>
+    </nav>
+    
+    <div class='container'>
+        <transactions></transactions>
+    </div>
     `,
 })
 export class AppComponent implements OnInit {
