@@ -17,16 +17,18 @@ export class TransactionService {
     ledgerCache: string[];
     isReady: boolean;
     serviceUrl: string;
+    transactionEndpoint:string;
 
     constructor(private http: Http) {
-        this.serviceUrl = "http://localhost:8000/";
+        this.serviceUrl = "http://localhost:3000/";
+        this.transactionEndpoint = "";
         this.transactionList = [];
         this.isReady = false;
     }
 
     getAllTransactions(): Observable<any> {
         let fetchAll = Observable.range(1, 4).flatMap(pageNumber => {
-            return this.http.get(this.serviceUrl + "transactions/" + pageNumber + ".json").map(response => {
+            return this.http.get(this.serviceUrl + this.transactionEndpoint + pageNumber + ".json").map(response => {
                 return response.json();
             });
         });
