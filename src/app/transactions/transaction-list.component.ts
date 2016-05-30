@@ -66,7 +66,7 @@ export class TransactionListComponent implements OnInit {
 
     applyFilter(ledger: string) {
         this.onCategoryFilter.emit({
-            ledger: ledger;
+            ledger: ledger
         });
     }
 }

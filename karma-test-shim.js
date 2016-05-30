@@ -2,6 +2,7 @@
 Error.stackTraceLimit = Infinity;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
 
+// This cancels out Karma's start(), which is done so we can bootstrap SystemJS
 __karma__.loaded = function () {
 };
 
@@ -11,7 +12,7 @@ function isJsFile(path) {
 }
 
 function isSpecFile(path) {
-  return path.slice(-8) == '_test.js';
+  return path.slice(-8) == '.spec.js';
 }
 
 function isBuiltFile(path) {
@@ -21,56 +22,32 @@ function isBuiltFile(path) {
 
 var allSpecFiles = Object.keys(window.__karma__.files)
   .filter(isSpecFile)
-  .filter(isBuiltFile);
+//.filter(isBuiltFile);
 
 // Load our SystemJS configuration.
 System.config({
-  baseURL: '/base'
-});
 
-System.config(
-{
+  //
+  baseURL: '/base',
+
+  //
   map: {
-    'rxjs': 'node_modules/rxjs',
     '@angular': 'node_modules/@angular',
-    'app': 'built'
+    'rxjs': 'node_modules/rxjs',
+    'app': 'app',
+    'moment': 'node_modules/moment/moment.js',
+    'lodash': 'node_modules/lodash/lodash.js'
   },
+
+  //
   packages: {
-    'app': {
-      main: 'main.js',
-      defaultExtension: 'js'
-    },
-    '@angular/core': {
-      main: 'index.js',
-      defaultExtension: 'js'
-    },
-    '@angular/compiler': {
-      main: 'index.js',
-      defaultExtension: 'js'
-    },
-    '@angular/common': {
-      main: 'index.js',
-      defaultExtension: 'js'
-    },
-    '@angular/platform-browser': {
-      main: 'index.js',
-      defaultExtension: 'js'
-    },
-    '@angular/platform-browser-dynamic': {
-      main: 'index.js',
-      defaultExtension: 'js'
-    },
-    // '@angular/router-deprecated': {
-    //   main: 'index.js',
-    //   defaultExtension: 'js'
-    // },
-    // '@angular/router': {
-    //   main: 'index.js',
-    //   defaultExtension: 'js'
-    // },
-    'rxjs': {
-      defaultExtension: 'js'
-    }
+    'app':                                { main: 'main.js', defaultExtension: 'js' },
+    '@angular/core':                      { main: 'index.js', defaultExtension: 'js' },
+    '@angular/compiler':                  { main: 'index.js', defaultExtension: 'js' },
+    '@angular/common':                    { main: 'index.js', defaultExtension: 'js' },
+    '@angular/platform-browser':          { main: 'index.js', defaultExtension: 'js' },
+    '@angular/platform-browser-dynamic':  { main: 'index.js', defaultExtension: 'js' },
+    'rxjs':                               { defaultExtension: 'js' }
   }
 });
 
@@ -84,7 +61,7 @@ Promise.all([
   testing.setBaseTestProviders(testingBrowser.TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
     testingBrowser.TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS);
 
-}).then(function() {
+}).then(function () {
   // Finally, load all spec files.
   // This will run the tests directly.
   return Promise.all(

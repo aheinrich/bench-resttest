@@ -52,7 +52,11 @@ module.exports = function(config) {
       //{pattern: 'src/**/*.ts', included: false, watched: false},
       //{pattern: 'src/**/*.js.map', included: false, watched: false}
     ],
-
+    
+    // Proxy
+    proxies: {
+      '/asdasdasdasd/': '/base/src/app/'
+    },
 
     // list of files to exclude
     exclude: [

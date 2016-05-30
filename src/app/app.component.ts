@@ -13,11 +13,13 @@ import { TransactionsComponent } from "./transactions/transactions.component";
 })
 export class AppComponent implements OnInit {
 
+    ready:boolean;
+
     constructor() {
         //Nothing to do here...
     }
 
     ngOnInit() {
-        //Nothing to do here...
+        this.ready = true;
     }
 }
