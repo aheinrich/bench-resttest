@@ -75,6 +75,15 @@ export class TransactionService {
         }
     }
 
+    getCategories(data: Transaction[]){
+        let results:Array<string> = []
+        data.forEach( (t:Transaction) => {
+            if (results.indexOf(t.ledger) == -1){
+                results.push(t.ledger)
+            }
+        })
+        return results
+    }
     /**
      * filterByLedger()
      * 
