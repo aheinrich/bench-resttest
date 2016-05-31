@@ -29,30 +29,37 @@ import {
     providers: [TransactionService],
     template: `
     <div class='row'>
-        <div class="col-md-3">
+        <div class="col-md-2">
         
             <ul class="nav nav-pills nav-stacked">
                 <li role="presentation" (click)="setState('intro')">
                     <a>Intro</a>
                 </li>
                 <li role="presentation" (click)="setState('list')">
-                    <a>Show List</a>
+                    <a>Transactions <span class="badge">36</span></a>
                 </li>
-                <li role="presentation" (click)="setState('table')">
-                    <a>Show Table</a>
+            </ul>     
+            
+            <h4>View by Category</h4>
+            <ul class="nav nav-pills nav-stacked">
+                <li role="presentation" *ngFor="let c of categoryList; let i = index" (click)="showFilteredList(c)">
+                    <a>{{c}}</a>
                 </li>
-                <li role="presentation" (click)="doSummary()">
-                    <a>Daily Summary</a>
-                </li>
-                <li role="presentation" (click)="doBalance()">
-                    <a>Daily Balance</a>
-                </li>
-                <li role="presentation" (click)="doReset()">
-                    <a>Reset Views</a>
-                </li>
-            </ul>            
+            </ul>
+            
+            <h4>Other Views</h4>
+            <ul class="nav nav-pills nav-stacked">
+                <li role="presentation"><a>Daily Balance</a></li>
+                <li role="presentation"><a>Clear</a></li>
+            </ul> 
+                   
         </div>
-        <div class="col-md-9">
+        <div class="col-md-8">
+            
+            <ul class="nav nav-pills">
+                <li role="presentation"><a>List <span class="badge">4</span></a></li>
+                <li role="presentation"><a>Table</a></li>
+            </ul>
             
             <transaction-intro *ngIf="uiView==='intro'"></transaction-intro>
 
@@ -65,15 +72,19 @@ import {
                 [transactions]="transactionList" 
                 (onCategoryFilter)="filterTransactions($event)">
             </transaction-table>
+            
+        </div>
+        
+        <div class="col-md-2">
+            <transaction-balance *ngIf="showBalance" [transactions]="transactionList"></transaction-balance>
         </div>
         
     </div>
     
     <div class="row">
         <div class="col-md-12">
+           
             
-            
-            <transaction-balance *ngIf="showBalance" [transactions]="transactionList"></transaction-balance>
             
             <transaction-summary *ngIf="showSummary" [transactions]="transactionList"></transaction-summary>
             
@@ -84,6 +95,7 @@ import {
 export class TransactionsComponent implements OnInit {
 
     transactionList: Transaction[];
+    categoryList: Array<string>;
     summaryList: any;
     filterBy: string;
 
@@ -114,14 +126,27 @@ export class TransactionsComponent implements OnInit {
             (results:any) => {
                 this.transactionList = results;
                 this.summarize();
+                this.getCategories()
             }
         );
     }
+    
+    getCategories(){
+        this.categoryList = this.service.getCategories(this.transactionList).sort()
+    }
+
+    showFilteredList(ledger:string){
+        this.filterTransactions( {ledger} );
+        this.setState('list');
+    }
 
     filterTransactions(ev: { ledger: string }) {
-        this.filterBy = ev.ledger;
-        this.transactionList = this.service.filterByLedger(this.transactionList, ev.ledger);
-        this.summarize();
+        this.service.fetchTransactions().then(
+            (results) => {
+                this.transactionList = this.service.filterByLedger(this.transactionList, ev.ledger);       
+                this.summarize();
+            }
+        )
     }
 
     doReset() {
@@ -131,6 +156,7 @@ export class TransactionsComponent implements OnInit {
         this.showBalance = false;
         this.filterBy = undefined;
         this.getTransactions();
+        
     }
 
 
