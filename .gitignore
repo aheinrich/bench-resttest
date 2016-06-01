@@ -36,5 +36,5 @@ src/app/**/*.js
 typings/**/*
 !typings/typings.d.ts
 
-# Mock data 
-mock
+# Build
+dist
