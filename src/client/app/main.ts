@@ -5,6 +5,9 @@ import { AppComponent } from "./app.component";
 
 // enableProdMode();
 
+fetch(){
+    
+}
 bootstrap(AppComponent, [
     HTTP_PROVIDERS,
 ]).then(success => console.log(`Bootstrap success`))

@@ -7,12 +7,11 @@
 
   // map tells the System loader where to look for things
   var map = {
-    'app': 'app', // 'dist',
-    'rxjs': 'node_modules/rxjs',
-    '@angular': 'node_modules/@angular',
-    '@angular2-material': 'node_modules/@angular2-material',
-    'moment': 'node_modules/moment/moment.js',
-    'lodash': 'node_modules/lodash/lodash.js'
+    'app':      'public/app',
+    'rxjs':     'libs/rxjs',
+    '@angular': 'libs/@angular',
+    'moment':   'libs/moment/moment.js',
+    'lodash':   'libs/lodash/lodash.js'
   };
 
   // packages tells the System loader how to load when no filename and/or no extension
@@ -35,30 +34,9 @@
     '@angular/upgrade',
   ];
 
-  var materialPackages = [
-    'button',
-    'card',
-    'checkbox',
-    'core',
-    'grid',
-    'icon',
-    'input',
-    'list',
-    'progress-bar',
-    'progress-circle',
-    'radio',
-    'sidenav',
-    'toolbar'
-  ];
-
   // add package entries for angular packages in the form '@angular/common': { main: 'index.js', defaultExtension: 'js' }
   packageNames.forEach(function (pkgName) {
     packages[pkgName] = { main: 'index.js', defaultExtension: 'js' };
-  });
-
-  // add package entries for angular-material packages 
-  materialPackages.forEach(function (pkgName) {
-    packages['@angular2-material/' + pkgName] = { format: 'cjs', defaultExtension: 'js', main: pkgName }
   });
 
   var config = {

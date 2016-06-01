@@ -12,22 +12,21 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   
   <!-- Application customizations-->
-  <!--<link href="public/css/app.css"  rel="stylesheet">-->
   
   <!-- Polyfill(s) for older browsers -->
-  <script src="node_modules/es6-shim/es6-shim.min.js"></script>
+  <script src="libs/es6-shim/es6-shim.min.js"></script>
 
   <!-- ZoneJs -->
-  <script src="node_modules/zone.js/dist/zone.js"></script>
+  <script src="libs/zone.js/dist/zone.js"></script>
 
   <!-- Reflection -->
-  <script src="node_modules/reflect-metadata/Reflect.js"></script>
+  <script src="libs/reflect-metadata/Reflect.js"></script>
 
   <!-- Module Loader-->
-  <script src="node_modules/systemjs/dist/system.src.js"></script>
+  <script src="libs/systemjs/dist/system.src.js"></script>
 
   <!-- SystemJS Configuration -->
-  <script src="system.config.js"></script>
+  <script src="public/system.config.js"></script>
   <script>
     System.import('app').catch(function(err){ console.error(err);  });
   </script>
