@@ -1,8 +1,14 @@
 import { Injectable } from "@angular/core";
 import { Http } from "@angular/http";
-import { Observable } from "rxjs/Rx";
+import { Observable, Observer } from "rxjs/Rx";
 import { Transaction, IRawTransaction } from "../models/transactions.models";
 import * as _ from "lodash";
+
+interface IBenchData {
+    totalCount: number
+    page: number
+    transactions: Array<any>
+}
 
 interface ITransactionResponse {
     totalCount: number;
@@ -17,20 +23,130 @@ export class TransactionService {
     ledgerCache: string[];
     isReady: boolean;
     serviceUrl: string;
+    endPoint: string;
 
     constructor(private http: Http) {
         this.serviceUrl = "http://localhost:8000/";
+        this.endPoint = "";
         this.transactionList = [];
         this.isReady = false;
     }
 
-    getAllTransactions(): Observable<any> {
-        let fetchAll = Observable.range(1, 4).flatMap(pageNumber => {
-            return this.http.get(this.serviceUrl + "transactions/" + pageNumber + ".json").map(response => {
-                return response.json();
-            });
+    /**
+     * getPageRequest()
+     * 
+     * Create an observable stream that fetches data from the remote source
+     *  - Will retry 3 times on error
+     *  - Maps the resulting Response from JSON to object
+     */
+    getPageRequest(pageNumber: number): Observable<IBenchData> {
+        return this.http.get(this.serviceUrl + this.endPoint + pageNumber.toString(10) + ".json")
+        // .retry(3)
+        .retryWhen((attempts:any) => {
+            return Observable
+                .range(1, 3)
+                .zip(attempts, (i) => { 
+                    return i; 
+                })
+                .flatMap( (i) => {
+                    console.log("...delay retry by " + i + " second(s)")
+                    return Observable.timer(i * 1000);
+                })
+        })
+        // .catch((e) => {
+        //     console.log(e)
+        //     return e
+        // })
+        .map(response => {
+            return response.json();
         });
-        return fetchAll;
+    }
+
+    backoffRetry() {
+        // return
+        // return retryWhen((attempts:any) => {
+        //     return Observable
+        //         .range(1, 3)
+        //         .zip(attempts, (i) => { 
+        //             return i; 
+        //         })
+        //         .flatMap( (i) => {
+        //             console.log("...delay retry by " + i + " second(s)")
+        //             return Observable.timer(i * 1000);
+        //         })
+        // })
+    }
+    /**
+     * getAllTransactions()
+     * 
+     *  Creates an observable that will emit arrays of transactions
+     * 
+     *  1. Fetches the first page from the server
+     *  2. Calculates the number of requests needed to retrieve all transactions
+     *  3. Creates an observable stream from an range based on the number of requests required
+     * 
+     */
+    getAllTransactions(): Observable<Transaction[]> {
+        return Observable.create((results: Observer<Transaction[]>) => {
+
+
+            let startingPage: number = 1
+            
+            // This is our first page of data. It is *not* requests at this point... 
+            let firstPageStream = this.getPageRequest(startingPage)
+
+            // Generate Request Handler
+            let generateRequests = (numberOfRequests: number) => {
+                let requestStream = Observable
+                    .range(startingPage + 1, numberOfRequests - 1)
+                    .flatMap(pageNumber => {
+                        return this.getPageRequest(pageNumber);
+                    })
+
+                requestStream.subscribe(
+                    // On Value
+                    (benchData: IBenchData) => {
+                        results.next(benchData.transactions)
+                    },
+                    // On Error
+                    (error: any) => {
+                        console.log("Unable to execute request for additional remote resources")
+                        results.error(error)
+                    },
+                    // On Complete
+                    () => {
+                        results.complete()
+                    })
+            }
+
+            // Error Handler
+            let handleError = (error: any) => {
+                console.log("Unable to complete...")
+                results.error(error)
+            }
+
+            // Get the first page of data
+            let requestStream = firstPageStream.map((benchData) => {
+                // Emit the first set of results
+                results.next(benchData.transactions)
+                // Return the number of requests needed
+                return Math.round(benchData.totalCount / benchData.transactions.length)
+            })
+            
+            // Fire EVERYTHING! This is the first observable to actually call subscribe, and it kicks off 
+            // the whole chain of subscriptions
+            requestStream.subscribe(
+                // Pass the number of requests to a function that will generate the next stream of 
+                // requests 
+                (numberOfRequests: number) => generateRequests(numberOfRequests),
+                // Handle any error
+                (err: any) => handleError(err),
+                () => {
+                    console.log("Finished")
+                }
+            )
+            
+        })
     }
 
     /**
@@ -60,11 +176,12 @@ export class TransactionService {
                     resolve(this.transactionList);
                 };
 
-                this.getAllTransactions().map((response: ITransactionResponse) => {
-                    return response.transactions.map((t: IRawTransaction) => {
+                this.getAllTransactions().map((transactionList: Array<any>) => {
+                    return transactionList.map((t: IRawTransaction) => {
                         return Transaction.fromJSON(t);
                     });
-                }).subscribe(
+                })
+                    .subscribe(
                     (data: Transaction[]) => handleData(data),
                     (error: any) => catchErrors(error),
                     () => finalize()
