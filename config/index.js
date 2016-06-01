@@ -16,12 +16,12 @@ exports.config = {
     env: "DEV",
     server: {
         host: "",
-        port: 3000
+        port: 8000
     },
     app: {
         start: 'index.html'
     },
     api: {
-        host: "http://localhost:8000"
+        host: "http://10.3.37.68:8000"
     }
 };

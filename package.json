@@ -3,8 +3,15 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "start": "concurrently \"tsc -w\" \"lite-server\" ",
-    "server": "nodemon dist/src/server/server.js ",
+    "docker:build": "docker build -t rest-test .",
+    "docker:run": "docker run -it --rm -p 8000:8000 rest-test",
+    
+    "build.dev": "gulp build",
+    "watch.dev": "gulp dev:watch",
+    
+    "list.tasks": "gulp --tasks",
+    "clean": "gulp dev:clean",
+    
     "lint": "tslint ./src/**/*.ts -t verbose",
     "lite": "lite-server",
     "postinstall": "typings install",
