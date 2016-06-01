@@ -26,8 +26,8 @@ export class TransactionService {
     endPoint: string;
 
     constructor(private http: Http) {
-        this.serviceUrl = "http://localhost:8000/";
-        this.endPoint = "";
+        this.serviceUrl = "http://10.3.37.68:8088/";
+        this.endPoint = "transactions/";
         this.transactionList = [];
         this.isReady = false;
     }
