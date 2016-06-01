@@ -15,7 +15,7 @@ COPY package.json typings.json /resttest/
 RUN npm install --unsafe-perm=true
 
 COPY . /resttest
-RUN chown -R nodejs:nodejs /quickstart
+RUN chown -R nodejs:nodejs /resttest
 USER nodejs
 
 CMD npm gulp compile
