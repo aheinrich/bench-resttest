@@ -5,12 +5,14 @@
   <meta charset="utf-8">
   <title>Bench - RestTest</title>
   <base href="/">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- CSS Framework-->
   
   <!-- Application customizations-->
+  <link href="libs/bootstrap/dist/css/bootstrap.css"  rel="stylesheet">
+  <link href="libs/font-awesome/css/font-awesome.css"  rel="stylesheet">
+  <link href="public/css/app.css"  rel="stylesheet">
   
   <!-- Polyfill(s) for older browsers -->
   <script src="libs/es6-shim/es6-shim.min.js"></script>
@@ -34,7 +36,13 @@
 </head>
 
 <body>
-  <app>Loading...</app>
+  <app>
+
+    <div class="loading">
+        <i class="fa fa-cog fa-spin fa-3x fa-fw"></i> <h1>Loading...</h1>
+    </div>
+
+  </app>
 </body>
 
 </html>
