@@ -7,18 +7,23 @@ import { Transaction, Utilities, CurrencyPipe, SortingPipe } from "./index";
     selector: "transaction-summary",
     pipes: [SortingPipe, CurrencyPipe],
     template: `
-    <div class="box">
-        <table>
+    <table class="table">
+        <thead>
             <tr>
                 <th>Date</th>
+                <th>Number of Transactions</th>
                 <th>Total</th>
             </tr>
+        </thead>
+        
+        <tbody>
             <tr *ngFor="let s of summaryList | sortBy : 'date' ">
                 <td> {{ s.date | date }} </td>
+                <td> {{ s.transactions.length  }} </td>
                 <td> {{ s.total | basicCurrency : "dollars" }} </td>
             </tr>
-        </table>
-    </div>
+        </tbody>
+    </table>
     `
 })
 export class TransactionSummaryComponent implements OnInit {

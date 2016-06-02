@@ -5,6 +5,7 @@ import {
     SortingPipe,
     Transaction,
     TransactionService,
+    TransactionIntroComponent,
     TransactionListComponent,
     TransactionTableComponent,
     TransactionSummaryComponent,
@@ -19,6 +20,7 @@ import {
         SortingPipe
     ],
     directives: [
+        TransactionIntroComponent,
         TransactionListComponent,
         TransactionTableComponent,
         TransactionSummaryComponent,
@@ -26,57 +28,88 @@ import {
     ],
     providers: [TransactionService],
     template: `
-    <div>
+    <div class='row'>
     
-        <h2>My Submission</h2>
-        <p>This is my submission for Bench's RestTest</p>
-
-        <h2>Requirements</h2>
-        <ol>
-            <li>We would like you to write an app that connects to an API, downloads all the data, and has a function that will calculate
-             the total balance</li>
-        </ol>
-
-        <h2>Additional Features</h2>
-        <ol>
-            <li>As a user, I need vendor names to be easily readable. Make the vendor names more readable, remove garbage from names.</li>
-            <li>As a user, I do not want to have any duplicated transactions in the list. Use the data provided to detect and identify 
-              duplicate transactions.</li>
-            <li>As a user, I need to get a list expense categories. For each category I need a list of transactions, and the total 
-              expenses for that category.</li>
-            <li>As a user, I need to calculate daily calculated balances. A running total for each day. For example, if I have 3 
-              transactions for the 5th 6th 7th, each for $5, then the daily balance on the 6th would be $10.</li>
-        </ol>
-       
-        <button (click)="getTransactions()">Get Started - Fetch Data</button>
-        <button (click)="doList()">Toggle List</button>
-        <button (click)="doTable()">Toggle Table</button>
-        <button (click)="doSummary()">Toggle Summary</button>
-        <button (click)="doBalance()">Toggle Balance</button>
-        <button (click)="doReset()">Reset View</button>
-
-        <hr>
+        <!-- Sidebar nav -->
+        <div class="col-md-2 sidebar">
         
-        <div *ngIf="filterBy">
-            <h3 >Filtered by: {{filterBy}}</h3>
-            <button (click)="getTransactions()" >Clear</button>
+            <ul class="nav nav-sidebar">
+            
+               <li (click)="doView('intro')">
+                    <a><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp; Intro</a>
+                </li>
+                
+                <li (click)="doView('transactions')">
+                    <a><i class="fa fa-dollar fa-lg" aria-hidden="true"></i>&nbsp; All Transactions</a>
+                </li>
+                
+                <li (click)="doView('balance')">
+                    <a><i class="fa fa-calendar fa-lg" aria-hidden="true"></i>&nbsp; Daily Balance</a>
+                </li>
+                
+            </ul>
+            
+            <h4>By Category</h4>
+            <ul class="nav nav-sidebar">
+                <li *ngFor="let c of categoryList; let i = index" 
+                    [class.active]="uiState.filter == c"
+                    (click)="doView('transactions', {'filterBy': c} )">
+                    <a>{{c}}</a>
+                </li>
+            </ul>
+            
         </div>
         
-        <div class="container">
+        <!-- Main Viewport for components -->
+        <div class="col-md-10 content">
             
-            <transaction-list *ngIf="showList" 
+            <ul class="nav nav-pills" *ngIf="uiState.view === 'transactions'">
+            
+                <li role="presentation" [class.active]="uiState.viewMode == 'list'" (click)="doViewMode('list')">
+                    <a><i class="fa fa-list-ul" aria-hidden="true"></i>&nbsp; List View</a>
+                </li>
+                
+                <li role="presentation" [class.active]="uiState.viewMode == 'table'" (click)="doViewMode('table')">
+                    <a><i class="fa fa-table" aria-hidden="true"></i>&nbsp; Table View</a>
+                </li>
+                
+                <li role="presentation" [class.active]="uiState.viewMode == 'summary'" (click)="doViewMode('summary')">
+                    <a><i class="fa fa-list-alt" aria-hidden="true"></i>&nbsp; Summary View</a>
+                </li>
+            </ul>
+            
+            <!-- Introduction -->
+            
+            <transaction-intro *ngIf="viewIntro"
+                (onButtonEvent)="handleIntroEvent($event)">
+            </transaction-intro>
+            
+            
+            <!-- List Component -->
+            
+            <transaction-list *ngIf="viewTransactionsAsList"
                 [transactions]="transactionList" 
-                (onCategoryFilter)="filterTransactions($event)">
+                (onCategoryFilter)="handleFilterEvent($event)">
             </transaction-list>
             
-            <transaction-table *ngIf="showTable" 
+            <!-- Table Component -->
+            
+            <transaction-table *ngIf="viewTransactionsAsTable"
                 [transactions]="transactionList" 
-                (onCategoryFilter)="filterTransactions($event)">
+                (onCategoryFilter)="handleFilterEvent($event)">
             </transaction-table>
             
-            <transaction-balance *ngIf="showBalance" [transactions]="transactionList"></transaction-balance>
+            <!-- Summary Component -->
             
-            <transaction-summary *ngIf="showSummary" [transactions]="transactionList"></transaction-summary>
+            <transaction-summary *ngIf="viewTransactionsAsSummary"
+                [transactions]="transactionList">
+            </transaction-summary>
+            
+            <!-- Balance Component -->
+            
+            <transaction-balance *ngIf="viewBalance" 
+                [transactions]="transactionList">
+            </transaction-balance>
             
         </div>
         
@@ -85,67 +118,180 @@ import {
 })
 export class TransactionsComponent implements OnInit {
 
-    transactionList: Transaction[];
-    summaryList: any;
-    filterBy: string;
-
-    showList: boolean;
-    showTable: boolean;
-    showSummary: boolean;
-    showBalance: boolean;
+    private data: {
+        transactions: Transaction[];
+        categories: string[];
+    }
+    
+    private uiState: {
+        view: string;
+        viewMode: string;
+        filter: string;
+    };
 
     constructor(private service: TransactionService) {
-        this.transactionList = [];
+        this.data = {
+            transactions: [],
+            categories: []
+        };
+        
+        this.uiState = {
+            view: "intro",
+            viewMode: "list",
+            filter: "",
+        }
     }
 
+    /**
+     * Lifecycle hooks
+     */
     ngOnInit() {
-        this.doReset();
+        
+        this.getTransactions()
     }
 
-    getTransactions() {
-        this.filterBy = undefined;
+    /**
+     * Main UI control bindings
+     */
+    doView(newView: string, viewOptions:any={}){
+        
+        console.log(`Request to change view from '${this.uiState.view}' to '${newView}' `)
+        
+        switch (newView) {
+            
+            case "intro": {
+                this._setView(newView);
+                break;
+            }
+            
+            case "transactions": {
+                this._setView(newView);
+                
+                if (viewOptions.filterBy){
+                    this._setFilter(viewOptions.filterBy);
+                    console.log(`Filter by: '${viewOptions.filterBy}' `)
+                } else {
+                    this._setFilter("");
+                    console.log(`No filter...`)
+                }
+                
+                break;
+            }
+            
+            case "balance": {
+                this._setView(newView);
+                this._setFilter("");
+                break;
+            }
+            
+            default: {
+                console.log(`Requested view '${newView}' not recognized'`)
+            }
+        }
+    }
+    
+    
+    doViewMode(modeSelected:string){
+        this._setViewMode(modeSelected)
+    }
+    
+    
+    
+    /**
+     * UI view control attributes
+     */
+    get viewIntro(){
+        return (this.uiState.view ==='intro') ? true : false;
+    }
+    
+    get viewTransactionsAsList() {
+        return (this.uiState.view === "transactions" && this.uiState.viewMode === "list") ? true : false;
+    }
+    
+    get viewTransactionsAsTable() {
+        return (this.uiState.view === "transactions" && this.uiState.viewMode === "table") ? true : false;
+    }
+    
+    get viewTransactionsAsSummary() {
+        return (this.uiState.view === "transactions" && this.uiState.viewMode === "summary") ? true : false;
+    }
+    
+    get viewBalance(){
+        return (this.uiState.view ==='balance') ? true : false;
+    }
+    
+    /**
+     * UI data attributes
+     */
+    
+    get transactionList():Transaction[] {
+
+        if (this.uiState.filter){
+            return this.service.filterByLedger(this.data.transactions, this.uiState.filter);
+        } else {
+            return this.data.transactions
+        }
+    }
+    
+    get categoryList(): string[]{
+        return this.data.categories
+    }
+       
+    /**
+     * Event handlers for various components
+     * 
+     */
+    
+    // Intro Component
+    private handleIntroEvent(ev:{view:string}){
+        console.log(`Event: ${JSON.stringify(ev)}`)
+        
+        if (ev.view == "transactions"){
+            this._setView("transactions")
+        }
+    }
+    
+    // List and Table Components
+    private handleFilterEvent(ev:{ledger:string}){
+        console.log(`Event: ${JSON.stringify(ev)}`)
+        
+        this.doView('transactions', {'filterBy': ev.ledger} )
+        
+    }
+    
+    /**
+     * Private Conponent functions
+     */
+    
+    private _setView(state:string){
+        this.uiState.view = state;
+    }
+    
+    private _setViewMode(mode:string){
+        this.uiState.viewMode = mode;
+    }
+    
+    private _setFilter(filter:string){
+        this.uiState.filter = filter;
+    }
+    
+    
+    
+    private getTransactions() {
         this.service.fetchTransactions().then(
-            (results:any) => {
-                this.transactionList = results;
-                this.summarize();
+            (results:Transaction[]) => {
+                this.data.transactions = results;
+                this.data.categories = this.getCategories(results)
             }
         );
     }
-
-    filterTransactions(ev: { ledger: string }) {
-        this.filterBy = ev.ledger;
-        this.transactionList = this.service.filterByLedger(this.transactionList, ev.ledger);
-        this.summarize();
+    
+    private getCategories(transactions:Transaction[]){
+        return this.service.getCategories(transactions).sort()
     }
-
-    doReset() {
-        this.showList = true;
-        this.showTable = false;
-        this.showSummary = false;
-        this.showBalance = false;
-        this.filterBy = undefined;
-        this.getTransactions();
+    
+    logUiState(){
+        console.log(`UIView: ${JSON.stringify(this.uiState)}`)
     }
-
-
-    doList() {
-        this.showList = !this.showList;
-    }
-
-    doTable() {
-        this.showTable = !this.showTable;
-    }
-
-    doSummary() {
-        this.showSummary = !this.showSummary;
-    }
-
-    doBalance() {
-        this.showBalance = !this.showBalance;
-    }
-
-    private summarize() {
-        this.summaryList = this.service.summarizeByDate(this.transactionList);
-    }
-
+    
 }

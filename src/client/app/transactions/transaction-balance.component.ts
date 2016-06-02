@@ -7,19 +7,24 @@ import { Transaction, Utilities, ITransactionGroup, CurrencyPipe } from "./index
     selector: "transaction-balance",
     pipes: [CurrencyPipe],
     template: `
-    <div>
-        <table>
-            <tr>
-                <th>Date</th>
-                <th>Total</th>
-                <th>Balance</th>
-            </tr>
-            <tr *ngFor="let group of dailyTotals">
-                <td> {{ group.date | date }} </td>
-                <td> {{ group.total | basicCurrency : "dollars" }} </td>
-                <td> {{ group.balance | basicCurrency : "dollars" }} </td>
-            </tr>
-        </table>
+    <div class="panel panel-default">
+        <div class="panel-heading">Daily Totals</div>
+        <div class="panel-body">
+            <p>Current Balance: </p>
+        </div>
+        <ul class="list-group">
+            <li class="list-group-item" *ngFor="let group of dailyTotals">
+                <div class="list-group">
+                    <h4 class="list-group-item-heading">{{ group.date | date }}</h4>
+                    <p class="list-group-item-text">
+                        Expenses: {{ group.total | basicCurrency : "dollars" }}
+                    </p>                
+                    <p class="list-group-item-text">
+                        Balance: {{ group.balance | basicCurrency : "dollars" }}
+                    </p>
+                </div>
+            </li>
+        </ul>
     </div>
     `
 })
