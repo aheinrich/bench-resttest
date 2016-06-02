@@ -5,19 +5,11 @@
   "scripts": {
     "docker:build": "docker build -t rest-test .",
     "docker:run": "docker run -it --rm -p 8000:8000 rest-test",
-    
-    "build.dev": "gulp build",
-    "watch.dev": "gulp dev:watch",
-    
-    "list.tasks": "gulp --tasks",
+    "build": "gulp build && dev:watch",
+    "start": "gulp compile && gulp start",
+    "list:tasks": "gulp --tasks",
     "clean": "gulp dev:clean",
-    
-    "lint": "tslint ./src/**/*.ts -t verbose",
-    "lite": "lite-server",
-    "postinstall": "typings install",
-    "tsc": "tsc",
-    "tsc:w": "tsc -w",
-    "typings": "typings"
+    "postinstall": "typings install"
   },
   "author": "nerdx7@gmail.com",
   "license": "MIT",
@@ -40,6 +32,7 @@
     "request": "^2.72.0",
     "rxjs": "5.0.0-beta.6",
     "systemjs": "0.19.27",
+    "whatwg-fetch": "^1.0.0",
     "zone.js": "^0.6.12"
   },
   "devDependencies": {
@@ -49,7 +42,6 @@
     "gulp-nodemon": "^2.0.7",
     "gulp-typescript": "^2.13.5",
     "lite-server": "^2.2.0",
-    "lodash": "^4.11.1",
     "rimraf": "^2.5.2",
     "run-sequence": "^1.2.1",
     "tslint": "^3.7.4",
