@@ -18,6 +18,7 @@ export class Transaction {
     private _date: Date;
     private _value: number;
     private _company: string;
+    private _ledger: string;
 
     /**
      * Generator
@@ -86,7 +87,10 @@ export class Transaction {
      * Getter: provides the category of the Transaction
      */
     get ledger(): string {
-        return this.source.Ledger;
+        if (!this._ledger){
+            this._ledger = this.source.Ledger == "" ? "N/A" : this.source.Ledger  
+        } 
+        return this._ledger;
     }
 
     /**
