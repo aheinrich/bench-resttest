@@ -20,16 +20,16 @@ interface ITransactionResponse {
 export class TransactionService {
 
     transactionList: Transaction[];
-    ledgerCache: string[];
     isReady: boolean;
     serviceUrl: string;
     endPoint: string;
 
     constructor(private http: Http) {
-        this.serviceUrl = "/api/";
-        this.endPoint = "transactions/";
         this.transactionList = [];
         this.isReady = false;
+
+        this.serviceUrl = "/api/";
+        this.endPoint = "transactions/";
     }
 
     /**
@@ -49,33 +49,15 @@ export class TransactionService {
                     return i; 
                 })
                 .flatMap( (i) => {
-                    console.log("...delay retry by " + i + " second(s)")
+                    console.log("Unable to fetch...delay retry by " + i + " second(s)")
                     return Observable.timer(i * 1000);
                 })
         })
-        // .catch((e) => {
-        //     console.log(e)
-        //     return e
-        // })
         .map(response => {
             return response.json();
         });
     }
-
-    backoffRetry() {
-        // return
-        // return retryWhen((attempts:any) => {
-        //     return Observable
-        //         .range(1, 3)
-        //         .zip(attempts, (i) => { 
-        //             return i; 
-        //         })
-        //         .flatMap( (i) => {
-        //             console.log("...delay retry by " + i + " second(s)")
-        //             return Observable.timer(i * 1000);
-        //         })
-        // })
-    }
+    
     /**
      * getAllTransactions()
      * 
@@ -190,6 +172,19 @@ export class TransactionService {
         }
     }
 
+    /**
+     * 
+     */
+    getCategories(data: Transaction[]){
+        let results:Array<string> = []
+        data.forEach( (t:Transaction) => {
+            if (results.indexOf(t.ledger) == -1){
+                results.push(t.ledger)
+            }
+        })
+        return results
+    }
+    
     /**
      * filterByLedger()
      * 
