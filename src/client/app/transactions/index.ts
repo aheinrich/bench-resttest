@@ -2,6 +2,7 @@ export * from "./models/index"
 export * from "./pipes/index"
 export * from "./services/index"
 
+export { TransactionIntroComponent } from "./transaction-intro.component"
 export { TransactionBalanceComponent } from "./transaction-balance.component"
 export { TransactionSummaryComponent } from "./transaction-summary.component"
 export { TransactionListComponent } from "./transaction-list.component"
