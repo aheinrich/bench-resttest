@@ -35,7 +35,6 @@ gulp.task('compile:server', function () {
  * Compile:Client
  */
 gulp.task('compile:client', function(){
-	// Source files
 	var tsProject = ts.createProject('src/client/tsconfig.json');
 	var tsResult = gulp.src('src/client/**/*.ts')
 		//.pipe(sourcemaps.init())
@@ -54,7 +53,7 @@ gulp.task('compile:client', function(){
  */
 
 /**
- * 
+ * Copy:Clean
  */
 gulp.task('copy:client', function() {
   gulp.src([
@@ -65,14 +64,21 @@ gulp.task('copy:client', function() {
 })
 
 /**
- * 
+ * Copy:Dependencies (Prod mode)
  */
 gulp.task('copy:dependencies', function() {
   gulp.src("node_modules/**/*", {base:'node_modules'}).pipe(gulp.dest('dist/public/libs'));
 })
 
 /**
- * 
+ * Copy:Dependencies (Dev mode)
+ */
+gulp.task('copy:dependencies:dev', function() {
+  gulp.src("node_modules/**/*", {base:'node_modules'}).pipe(gulp.dest('dist/public/libs'));
+})
+
+/**
+ * Copy:Styles
  */
 gulp.task('copy:styles', function() {
   gulp.src([
@@ -86,6 +92,7 @@ gulp.task('copy:styles', function() {
  * 
  * - copy
  * - compile
+ * - build
  * 
  */
 
@@ -101,30 +108,61 @@ gulp.task('build', function (callback) {
   runSequence('dev:clean', 'compile', 'copy', callback);
 });
 
+
 /**
  * Development Tasks
  * 
  * - dev:watch
  * - dev:clean
+ * - dev:start
  */
-gulp.task('dev:watch', ['server:start'], function () {
+
+/**
+ * 
+ */
+gulp.task('dev:watch', ['dev:start'], function () {
   gulp.watch('src/server/*.ts', ['compile:server']);
   gulp.watch('src/client/app/**/*.ts', ['compile:client']);
   gulp.watch('src/client/app/**/*.css', ['copy:styles']);
 });
 
-
+/**
+ * 
+ */
 gulp.task('dev:clean', function () {
   return del('dist');
 });
 
-// Runtime
-gulp.task('server:start', function () {
+/**
+ * 
+ */
+gulp.task('dev:start', function () {
   nodemon({
     script: 'dist/server/server.js',
     watch: 'dist'
   });
 });
 
-// Default Task
-gulp.task('default', ['compile']);
+/**
+ * Production Tasks
+ * 
+ */
+
+/**
+ * `start`
+ */
+gulp.task('start', function() {
+	nodemon({
+		script: 'dist/server/server.js',
+		env: { 'NODE_ENV': 'production' }
+	});
+});
+
+/**
+ * Default Task  
+ * 
+ * Performs a quick compile, and then begins developer-mode watch
+ */ 
+gulp.task('default', function (callback) {
+  runSequence('compile', 'dev:watch', callback);
+});
