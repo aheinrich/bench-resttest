@@ -5,32 +5,7 @@ import * as path from 'path';
 
 import { config } from '../../config';
 
-export interface IConfig {
-    env: string;
-    server: {
-        host: string;
-        port: number;
-    }
-    app: {
-        start:string;
-    }
-    api: {
-        host: string;
-    }
-}
-
 let publicDir = path.join(__dirname, '../public/');
-
-if (!process.env.NODE_ENV) {
-  console.log("Running in DEV mode");
-} else {
-  if (process.env.NODE_ENV == "production"){
-    console.log(`Running in PROD mode - ${process.env.NODE_ENV}`);
-  } else {
-    console.log(`Running in DEV mode - ${process.env.NODE_ENV}`);
-  }
-  
-};
 
 console.log(config)
 
@@ -39,8 +14,6 @@ console.log(config)
  * 
  */
 const app = express();
-
-
 
 
 // Enable CORS
