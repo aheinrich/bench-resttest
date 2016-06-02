@@ -1,6 +1,5 @@
 import {Transaction} from "./transactions.models";
 import * as _ from "lodash";
-//import * as moment from "moment"
 
 export interface ITransactionGroup {
     date: Date;
