@@ -85,6 +85,11 @@ gulp.task('copy:styles', function() {
     'src/client/app/**/*.css',
     ])
     .pipe(gulp.dest('dist/public/app'));
+    
+   gulp.src([
+    'public/**/*',
+    ])
+    .pipe(gulp.dest('dist/public'));
 })
 
 /**
