@@ -35,15 +35,15 @@ import {
         
             <ul class="nav nav-sidebar">
             
-               <li (click)="doView('intro')">
+               <li [class.active]="uiState.view == 'intro'" (click)="doView('intro')">
                     <a><i class="fa fa-home fa-lg" aria-hidden="true"></i>&nbsp; Intro</a>
                 </li>
                 
-                <li (click)="doView('transactions')">
-                    <a><i class="fa fa-dollar fa-lg" aria-hidden="true"></i>&nbsp; All Transactions</a>
+                <li [class.active]="uiState.view == 'transactions'" (click)="doView('transactions')">
+                    <a><i class="fa fa-dollar fa-lg" aria-hidden="true"></i>&nbsp; Transactions</a>
                 </li>
                 
-                <li (click)="doView('balance')">
+                <li [class.active]="uiState.view == 'balance'" (click)="doView('balance')">
                     <a><i class="fa fa-calendar fa-lg" aria-hidden="true"></i>&nbsp; Daily Balance</a>
                 </li>
                 
@@ -65,14 +65,14 @@ import {
             
             <ul class="nav nav-pills bt-pills" *ngIf="uiState.view === 'transactions'">
             
-                <li role="presentation" [class.active]="uiState.viewMode == 'list'" (click)="doViewMode('list')">
-                    <a><i class="fa fa-list-ul" aria-hidden="true"></i>&nbsp; List View</a>
-                </li>
-                
                 <li role="presentation" [class.active]="uiState.viewMode == 'table'" (click)="doViewMode('table')">
                     <a><i class="fa fa-table" aria-hidden="true"></i>&nbsp; Table View</a>
                 </li>
                 
+                <li role="presentation" [class.active]="uiState.viewMode == 'list'" (click)="doViewMode('list')">
+                    <a><i class="fa fa-list-ul" aria-hidden="true"></i>&nbsp; List View</a>
+                </li>
+                    
                 <li role="presentation" [class.active]="uiState.viewMode == 'summary'" (click)="doViewMode('summary')">
                     <a><i class="fa fa-list-alt" aria-hidden="true"></i>&nbsp; Summary View</a>
                 </li>
@@ -137,7 +137,7 @@ export class TransactionsComponent implements OnInit {
         
         this.uiState = {
             view: "intro",
-            viewMode: "list",
+            viewMode: "table",
             filter: "",
         }
     }
@@ -161,6 +161,7 @@ export class TransactionsComponent implements OnInit {
             
             case "intro": {
                 this._setView(newView);
+                this._setFilter("");
                 break;
             }
             
