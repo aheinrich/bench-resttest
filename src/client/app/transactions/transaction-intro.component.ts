@@ -7,7 +7,7 @@ import { Component, Output, EventEmitter } from '@angular/core';
     <h2>My Submission</h2>
     <p>This is my submission for Bench's RestTest</p>
     
-    <button class="btn btn-primary bt-button" (click)="doGetStarted()">Get Started</button>
+    <button class="btn btn-primary" (click)="doGetStarted()">Get Started</button>
     
     <h2>Requirements</h2>
     <ol>
