@@ -28,7 +28,7 @@ To start the application, run the following:
 
 Then, open your browser to:
 
-http://localhost:8000/run
+http://localhost:8000/
 
 # Deploy via Docker
 
@@ -44,7 +44,7 @@ To run the application:
 
 This will build the application at container runtime. It can be accessed via your Docker-Machine IP address:
 
-http://http://192.168.99.100:8000/run *
+http://192.168.99.100:8000/ *
  
 ** This is an example. Your Docker IP address may vary
 
@@ -56,7 +56,7 @@ To build the application, run the following:
 
 Then, open your browser to:
 
-http://localhost:8000/run
+http://localhost:8000/
 
 The project uses **Typescript**, compiling to Javascript (es5) and a leverages a build pipeline with **Gulp**. The server-side 
 of the project is using the **ExpresssJS** framework. The client-side of the project is using the **Angular2** framework. It is 
