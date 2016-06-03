@@ -36,13 +36,11 @@
     "zone.js": "^0.6.12"
   },
   "devDependencies": {
-    "concurrently": "^2.0.0",
     "del": "^2.2.0",
     "gulp": "^3.9.1",
     "gulp-nodemon": "^2.0.7",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.5",
-    "lite-server": "^2.2.0",
     "run-sequence": "^1.2.1",
     "tslint": "^3.7.4",
     "typescript": "^1.8.10",
