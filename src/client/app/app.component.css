@@ -1,3 +1,19 @@
 #content {
-    padding-top: 50px; 
+    padding-top: 80px; 
+}
+
+.symbol {
+    display: block;
+    width: 50px;
+    height: 50px;
+    fill: #fff;
+}
+
+.navbar-fixed-top {
+    min-height: 80px;
+}
+
+.navbar-default {
+    background-color: #007A75;
+    border-color: #007A75;
 }

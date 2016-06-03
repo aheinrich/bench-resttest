@@ -63,7 +63,7 @@ import {
         <!-- Main Viewport for components -->
         <div class="col-md-10 content">
             
-            <ul class="nav nav-pills" *ngIf="uiState.view === 'transactions'">
+            <ul class="nav nav-pills bt-pills" *ngIf="uiState.view === 'transactions'">
             
                 <li role="presentation" [class.active]="uiState.viewMode == 'list'" (click)="doViewMode('list')">
                     <a><i class="fa fa-list-ul" aria-hidden="true"></i>&nbsp; List View</a>

@@ -6,3 +6,8 @@
   align-items: center;
   justify-content: center;
 }
+
+.bt-button {
+    color: #fff;
+    background-color: #007A75;
+}
