@@ -7,25 +7,29 @@ import { Transaction, Utilities, ITransactionGroup, CurrencyPipe } from "./index
     selector: "transaction-balance",
     pipes: [CurrencyPipe],
     template: `
-    <div class="panel panel-default">
-        <div class="panel-heading">Daily Totals</div>
-        <div class="panel-body">
-            <p>Current Balance: </p>
-        </div>
-        <ul class="list-group">
-            <li class="list-group-item" *ngFor="let group of dailyTotals">
-                <div class="list-group">
-                    <h4 class="list-group-item-heading">{{ group.date | date }}</h4>
-                    <p class="list-group-item-text">
-                        Expenses: {{ group.total | basicCurrency : "dollars" }}
-                    </p>                
-                    <p class="list-group-item-text">
-                        Balance: {{ group.balance | basicCurrency : "dollars" }}
-                    </p>
-                </div>
-            </li>
-        </ul>
-    </div>
+    <ul class="list-group">
+        <li class="list-group-item" *ngFor="let group of dailyTotals">
+        
+            <div class="list-group">
+                <h4 class="list-group-item-heading pull-right">
+                    <i class="fa fa-usd fa-lg bt-currency" aria-hidden="true"></i>
+                    {{ group.balance | basicCurrency : "dollars" }}
+                </h4>
+                <h4 class="list-group-item-heading">{{ group.date | date : "fullDate" }}</h4>
+                <p class="list-group-item-text">
+                    Number of Transactions: {{ group.transactions.length }}
+                </p>
+                <ul>
+                    <li *ngFor="let t of group.transactions"> {{t.company}}</li>
+                </ul>
+                <p class="list-group-item-text">
+                    Daily Total: {{ group.total | basicCurrency : "dollars" }}
+                </p>
+            </div>
+            
+        </li>
+    </ul>
+    
     `
 })
 export class TransactionBalanceComponent implements OnInit {

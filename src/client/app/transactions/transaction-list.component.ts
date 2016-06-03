@@ -7,7 +7,7 @@ import { Transaction, CurrencyPipe, SortingPipe } from "./index";
     selector: "transaction-list",
     pipes: [CurrencyPipe, SortingPipe],
     template: `
-    <h3>Total: {{ totalAsDollars | basicCurrency }} </h3>
+    <h3>Total: $ {{ totalAsDollars | basicCurrency }} </h3>
     
     <ng-content></ng-content>
     
@@ -17,14 +17,21 @@ import { Transaction, CurrencyPipe, SortingPipe } from "./index";
         <li role="presentation" (click)="applySort('company')"><a>Company</a></li>
         <li role="presentation" (click)="applySort('ledger')"><a>Ledger</a></li>
     </ul>
+    
+    <br />
+    
     <ul class="list-group">
         <li class="list-group-item" *ngFor="let t of transactions | sortBy : sorting">
+        
             <div class="list-group">
-                <h4 class="list-group-item-heading">{{ t.date | date }} - {{ t.company }}</h4>
-                <p class="list-group-item-text">{{ t.amountInDollars | basicCurrency }}</p>
+                <h4 class="pull-right">
+                    <i class="fa fa-usd fa-lg bt-currency" aria-hidden="true"></i>
+                    {{ t.amountInDollars | basicCurrency }}
+                </h4>
+                <h4 class="list-group-item-heading">{{ t.company }}</h4>
+                <p class="list-group-item-text">{{ t.date | date : "fullDate" }}</p>
+                <a class="list-group-item-text" (click)="applyFilter(t.ledger)"> {{ t.ledger }}</a>
             </div>
-            
-            [<b (click)="applyFilter(t.ledger)"> {{ t.ledger }} </b>]
             
         </li>
     </ul>
