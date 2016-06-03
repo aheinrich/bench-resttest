@@ -137,9 +137,9 @@ I changed over the project structure and didn't update the `Typescript` module d
 ```
 
 # Testing
-There are no unit tests ... :-\
+There are no unit tests ... :neutral_face:
 
-There are no e2e tests ... :-\ 
+There are no e2e tests ... :neutral_face:
 
 **... What. What?! Why not?** 
 
