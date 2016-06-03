@@ -18,9 +18,9 @@ import { Transaction, Utilities, CurrencyPipe, SortingPipe } from "./index";
         
         <tbody>
             <tr *ngFor="let s of summaryList | sortBy : 'date' ">
-                <td> {{ s.date | date }} </td>
+                <td> {{ s.date | date : "fullDate" }} </td>
                 <td> {{ s.transactions.length  }} </td>
-                <td> {{ s.total | basicCurrency : "dollars" }} </td>
+                <td>$ {{ s.total | basicCurrency : "dollars" }} </td>
             </tr>
         </tbody>
     </table>

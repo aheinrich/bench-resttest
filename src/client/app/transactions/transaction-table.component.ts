@@ -10,7 +10,7 @@ import { Transaction, CurrencyPipe, SortingPipe } from "./index";
         SortingPipe
     ],
     template: `
-    <h3>Total: {{ total | basicCurrency : "dollars" }} </h3>
+    <h3>Total: $ {{ total | basicCurrency : "dollars" }} </h3>
     <table class="table">
         <thead>
             <tr>
@@ -33,8 +33,8 @@ import { Transaction, CurrencyPipe, SortingPipe } from "./index";
             <tr *ngFor="let t of transactions | sortBy : sorting">
                 <td>{{t.date | date}}</td>
                 <td>{{t.company }}</td>
-                <td>{{t.ledger }} <button class="btn btn-xs" (click)="applyFilter(t.ledger)">Filter</button> </td>
-                <td>{{t.amount | basicCurrency : "dollars" }}</td>
+                <td> <a (click)="applyFilter(t.ledger)"> {{t.ledger }} </a> </td>
+                <td>$ {{t.amount | basicCurrency : "dollars" }}</td>
             </tr>
         </tbody>
     </table>
