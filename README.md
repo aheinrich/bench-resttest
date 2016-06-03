@@ -1,6 +1,6 @@
-# bench-resttest
+# Bench RestTest
 
-My application for Bench's "RestTest" code evaluation 
+My application for Bench Labs "RestTest" code evaluation 
 
 Uses:
 - Express (as a host, CORS proxy)
