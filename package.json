@@ -5,8 +5,9 @@
   "scripts": {
     "docker:build": "docker build -t rest-test .",
     "docker:run": "docker run -it --rm -p 8000:8000 rest-test",
-    "build": "gulp build && dev:watch",
-    "start": "gulp compile && gulp start",
+    "build": "gulp build",
+    "dev": "gulp build && dev:watch",
+    "start": "gulp build && gulp start",
     "list:tasks": "gulp --tasks",
     "clean": "gulp dev:clean",
     "postinstall": "typings install"
@@ -28,6 +29,7 @@
     "es6-shim": "^0.35.0",
     "express": "^4.13.4",
     "font-awesome": "^4.6.3",
+    "gulp-sourcemaps": "^1.6.0",
     "lodash": "^4.13.1",
     "moment": "^2.13.0",
     "reflect-metadata": "^0.1.3",
